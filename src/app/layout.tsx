@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 import { Open_Sans } from 'next/font/google';
 import './globals.css';
+import Header from '@/components/Header';
 
 export const metadata: Metadata = {
   title: "dkmqflx's blog",
@@ -19,7 +20,10 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="ko" className={openSans.className}>
-      <body>{children}</body>
+      <body className="max-w-screen-sm mx-auto py-4">
+        <Header />
+        <main>{children}</main>
+      </body>
     </html>
   );
 }
