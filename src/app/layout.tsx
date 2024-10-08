@@ -20,7 +20,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="ko" className={openSans.className}>
-      <body className="max-w-screen-sm mx-auto py-4">
+      <body className="max-w-screen-sm mx-auto p-4">
         <Header />
         <main>{children}</main>
       </body>
