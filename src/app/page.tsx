@@ -15,12 +15,9 @@ async function HomePage() {
               : 'border-t border-solid border-gray-500'
           }`}
         >
-          <Link
-            href={`/posts/${route}`}
-            className="text-sm flex justify-between"
-          >
+          <Link href={`/posts/${route}`} className="flex justify-between">
             <span>{title}</span>
-            <span className="text-xs text-slate-200">{date.toString()}</span>
+            <span className="text-sm text-slate-200">{date.toString()}</span>
           </Link>
         </li>
       ))}
