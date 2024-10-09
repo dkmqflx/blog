@@ -1,98 +1,14 @@
 [
   {
-    "title": "자바스크립트 문법0",
-    "description": "자바스크립트 문법 정리",
-    "date": "2022.05.08",
-    "route": "javascript-basic0"
-  },
-  {
     "title": "자바스크립트 문법",
     "description": "자바스크립트 문법 정리",
     "date": "2022.05.18",
     "route": "javascript-basic"
   },
   {
-    "title": "자바스크립트 문법2",
-    "description": "자바스크립트 문법 정리",
-    "date": "2022.05.28",
-    "route": "javascript-basic2"
-  },
-  {
-    "title": "자바스크립트 문법3",
-    "description": "자바스크립트 문법 정리",
-    "date": "2023.05.08",
-    "route": "javascript-basic3"
-  },
-  {
-    "title": "자바스크립트 문법4",
-    "description": "자바스크립트 문법 정리",
-    "date": "2022.10.08",
-    "route": "javascript-basic4"
-  },
-  {
-    "title": "자바스크립트 문법5",
-    "description": "자바스크립트 문법 정리",
-    "date": "2023.02.08",
-    "route": "javascript-basic5"
-  },
-  {
-    "title": "자바스크립트 문법6",
-    "description": "자바스크립트 문법 정리",
-    "date": "2024.02.15",
-    "route": "javascript-basic6"
-  },
-  {
-    "title": "자바스크립트 문법7",
-    "description": "자바스크립트 문법 정리",
-    "date": "2023.08.08",
-    "route": "javascript-basic7"
-  },
-  {
-    "title": "자바스크립트 문법8",
-    "description": "자바스크립트 문법 정리",
-    "date": "2024.09.28",
-    "route": "javascript-basic8"
-  },
-  {
-    "title": "자바스크립트 문법9",
-    "description": "자바스크립트 문법 정리",
-    "date": "2023.01.08",
-    "route": "javascript-basic9"
-  },
-  {
     "title": "리액트 문법",
     "description": "리액트 문법 정리",
     "date": "2022.06.15",
     "route": "react-basic"
-  },
-  {
-    "title": "리액트 문법2",
-    "description": "리액트 문법 정리2",
-    "date": "2022-06-15",
-    "route": "react-basic2"
-  },
-  {
-    "title": "리액트 문법3",
-    "description": "리액트 문법 정리3",
-    "date": "2022-06-15",
-    "route": "react-basic3"
-  },
-  {
-    "title": "리액트 문법4",
-    "description": "리액트 문법 정리4",
-    "date": "2022-06-15",
-    "route": "react-basic4"
-  },
-  {
-    "title": "Node 문법",
-    "description": "기본 적인 Node 사용법",
-    "date": "2022-08-21",
-    "route": "node-basic"
-  },
-  {
-    "title": "리액트 18버전",
-    "description": "리액트 18에 추가된 사항들 정리",
-    "date": "2023-05-02",
-    "route": "react18"
   }
 ]
