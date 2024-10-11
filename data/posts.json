@@ -1,14 +1,7 @@
 [
   {
-    "title": "자바스크립트 문법",
-    "description": "자바스크립트 문법 정리",
-    "date": "2022.05.18",
-    "route": "javascript-basic"
-  },
-  {
-    "title": "리액트 문법",
-    "description": "리액트 문법 정리",
-    "date": "2022.06.15",
-    "route": "react-basic"
+    "title": "Next.js로 블로그를 다시 만들게된 이유와 느낀점",
+    "date": "2024.10.18",
+    "route": "nextjs-blog"
   }
 ]
