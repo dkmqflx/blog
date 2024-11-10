@@ -1,0 +1,110 @@
+import Meta from '@/components/Meta';
+
+export const metadata = {
+  title: 'Knip으로 불필요한 코드 제거하기',
+  description:
+    '불필요한 파일, 사용하지 않는 의존성 등을 찾아주는 라이브러리 Knip에 대한 설명한 글입니다.',
+  date: '2024.11.08',
+  route: 'Knip',
+};
+
+<Meta metadata={metadata} />
+
+## 들어가며
+
+프로젝트를 진행하다 보면, 불필요한 코드가 남아 있는 상황을 종종 발견하게 된다. 이러한 코드를 일일이 찾아서 제거할 수도 있지만, 규모가 큰 프로젝트에서는 시간이 많이 소요될 수 밖에 없다.
+
+게다가 만약 중복되는 불필요한 코드가 여러 파일에 걸쳐 흩어져 있다면, 이를 전부 수동으로 정리하는 것은 굉장히 비효율적이며 수고로운 일이다.
+
+이러한 문제를 효과적으로 해결할 수 있는 도구가 바로 Knip 이다.
+
+---
+
+## Knip이란 ?
+
+[knip의 공식문서](https://knip.dev/explanations/why-use-knip)를 보면 다음과 같이 knip을 소개하고 있다.
+
+> Knip finds and fixes unused files, exports and dependencies.
+
+즉, Knip은 불필요한 파일이나 사용되지 않는 의존성을 찾아주는 도구로 개발 과정에서 불필요하게 남아 있는 코드를 찾아서 제거하는데 도움을 준다.
+
+---
+
+## Knip 사용하기
+
+우선 아래 명령어를 통해 knip을 설치한 다음 실행해준다
+
+```shell
+
+npm install knip -D
+
+npm run knip
+
+```
+
+Knip을 실행하게 되면 아래와 같은 결과가 출력되는데 사용되지 않는 여러 파일, exports, 의존성 그리고 타입까지 찾아주는 것을 확인할 수 있다.
+
+```shell
+Unused files (100)
+...
+
+Unused dependencies (6)
+...
+
+Unused devDependencies (2)
+...
+
+Unlisted binaries (3)
+...
+
+Unused exports (213)
+...
+
+Unused exported types (244)
+...
+
+Unused exported enum members (86)
+...
+
+Duplicate exports (17)
+...
+
+```
+
+각 Issue Types에 자세한 설명은 [공식문서](https://knip.dev/reference/issue-types)에서 확인할 수 있다.
+
+만약 프로젝트 내 특정 파일이나 경로에 대해서만 검사를 수행하거나 특정 Issue Type에 한정해 결과를 확인하고 싶다면, `knip.json` 설정 파일을 활용할 수 있다.
+
+예를 들어, `Unused files`의 결과만 확인하려면 다음과 같이 knip.json 파일을 작성한 후 Knip을 실행하면 된다.
+
+```json
+// knip.json
+{
+  "include": ["files"]
+}
+```
+
+---
+
+## husky와 함께 사용하기
+
+Knip을 통해서 주기적으로 불필요한 코드를 찾고 제거해줄수도 있겠지만, Husky와 같은 Git Hook 도구와 함께 사용해서 의도치 않게 불필요한 코드가 원격 저장소에 올라가는 것을 미리 방지할 수도 있다.
+
+아래와 같이 `pre-push` hook에 Knip 명령어를 추가하면 원격 저장소에 push 하기 전에 knip이 실행되고, 불필요한 코드가 있다면 push가 되지 않기 때문에 사전에 불필요한 코드가 원격 저장소에 올라가는 것을 막을 수 있다.
+
+```shell
+# .husky/pre-push
+
+npx knip
+
+```
+
+---
+
+## 마치며
+
+개발과정에서 불필요한 코드가 쌓이는 것은 프로젝트를 무겁게 만들 뿐 아니라 히스토리를 알기 어려운 코드가 생길 수 있기 때문에 전반적으로 개발 부채를 야기한다.
+
+하지만 knip을 사용해서 불필요한 코드를 제거할 수 있으며 이를 통해 개발 부채가 쌓이는 것을 막을 수 있다.
+
+실제로 knip을 사용해서 많은 사용되지 않는 많은 코드를 제거할 수 있었고 이를 통해 최종 번들 사이즈와 빌드 시간도 줄일 수 있었다.
