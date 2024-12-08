@@ -8,5 +8,10 @@
     "title": "Knip으로 불필요한 코드 삭제하기",
     "date": "2024.11.08",
     "route": "knip"
+  },
+  {
+    "title": "Broadcastchannel API로 서로 다른 탭 사이에 통신하기",
+    "date": "2024.12.08",
+    "route": "broadcastchannel"
   }
 ]
