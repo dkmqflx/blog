@@ -23,5 +23,10 @@
     "title": "해커와 화가를 읽고",
     "date": "2025.02.02",
     "route": "hackers-and-painters"
+  },
+  {
+    "title": "nuqs를 사용해서 쿼리 파라미터 관리하기",
+    "date": "2025.02.11",
+    "route": "nuqs"
   }
 ]
