@@ -1,0 +1,280 @@
+import Meta from "@/components/Meta";
+
+export const metadata = {
+  title: "@svgr/cli을 사용해서 svg 형식의 아이콘을 리액트 컴포넌트로 관리하기",
+  description:
+    "@svgr/cli 라이브러리를  svg 형식의 아이콘을 리액트 컴포넌트로 관리하는 방식에 대해 설명한 글입니다.",
+  date: "2025.03.12",
+  route: "svgr-cli",
+};
+
+<Meta metadata={metadata} />
+
+## 들어가기에 앞서
+
+SVG 파일은 크기를 조정해도 이미지가 깨지지 않는다는 장점이 있어, 아이콘 관리에 널리 사용된다. Next.js 프로젝트에서 SVG를 효율적으로 활용하기 위해 여러 가지 방법이 있지만, `@svgr/cli`를 사용하면 **SVG 파일을 React 컴포넌트로 변환해서**을 쉽게 사용할 수 있다.
+
+---
+
+## @svgr/cli란?
+
+[`@svgr/cli`](https://react-svgr.com/docs/cli/)는 SVG 파일을 **React 컴포넌트로 변환하는 SVGR 라이브러리를 CLI(Command Line Interface) 환경에서 사용할 수 있도록 지원하는 도구**이다.
+이를 사용하면 명령어 한 줄로 SVG를 React 컴포넌트로 변환할 수 있다.
+
+아래 코드는 @svgr/cli을 사용해서 svg를 리액트 컴포넌트로 변환한 결과로, svg는 리액트 컴포넌트의 형태로 변환 된다.
+
+```tsx
+import * as React from "react";
+
+const SvgComponent = (props) => (
+  <svg width="1em" height="1em" viewBox="0 0 48 1" {...props}>
+    <path d="M0 0h48v1H0z" fill="currentColor" fillRule="evenodd" />
+  </svg>
+);
+
+export default SvgComponent;
+```
+
+---
+
+## @svgr/cli 설치 및 사용법
+
+### 1️⃣ `@svgr/cli` 설치
+
+@svgr/cli을 사용해서 리액트 컴포넌트로 변환하기에 앞서 필요한 라이브러리를 설치해준다.
+
+```bash
+npm install --save-dev @svgr/cli
+```
+
+### 2️⃣ 기본 변환 명령어 실행
+
+```bash
+npx @svgr/cli ./public/icons/Arrow.svg
+```
+
+설치 후에 아래처럼 명령어를 실행하게 되면 Arrow라는 이름의 컴포넌트가 생성되는 것을 확인할 수 있다.
+
+---
+
+## @svgr/cli 옵션 사용법
+
+### 1️⃣ 변환된 파일 저장 경로 지정
+
+svg를 리액트 컴포넌트로 변환하는 과정에서 다양한 옵션을 지정해줄 수 있는데, 아래와 같이 변환될 파일이 저장될 경로나 파일 이름의 형식을 정할 수 있다.
+
+```bash
+npx @svgr/cli <아이콘 파일 경로> --out-dir ./src/icons --filename-case pascal
+```
+
+✅ `--out-dir`: 변환된 컴포넌트 파일 저장 경로 지정
+
+✅ `--filename-case pascal`: PascalCase 형식으로 파일 이름 변환
+
+### 2️⃣ 설정 파일 사용 (`.svgrrc.js`)
+
+여러 옵션을 명령어에서 직접 지정하는 대신, **설정 파일을 통해 관리**할 수도 있다.
+
+```js
+// .svgrrc.js
+module.exports = {
+  typescript: true,
+  outDir: "./src/Icons",
+  filenameCase: "pascal",
+  ignoreExisting: true,
+};
+```
+
+설정 파일을 사용하려면 다음과 같은 명령어를 통해서 실행할 수 있다. 이 때 `-—config-file`이라는 옵션을 사용한다.
+
+```bash
+npx @svgr/cli <아이콘 파일 경로> --config-file ./.svgrrc.js
+```
+
+### 3️⃣ Props로 아이콘 크기 및 색상 변경
+
+추가적으로 외부에서 props를 통해서 아이콘을 변경하고 싶다면 아래와 같이 svgProps에 width와 height라는 속성을 전달받을 수 있도록 한다.
+
+```js
+const DEFAULT_ICON_COLOR = `#808080`;
+
+module.exports = {
+  typescript: true,
+  svgProps: {
+    width: "{props.width ?? 24}",
+    height: "{props.height ?? 24}",
+  },
+  replaceAttrValues: {
+    [DEFAULT_ICON_COLOR]: `{props.color ?? "${DEFAULT_ICON_COLOR}"}`,
+  },
+  outDir: "./src/Icons",
+  filenameCase: "pascal",
+  dimensions: false,
+  ignoreExisting: true,
+};
+```
+
+위와 같이 설정을 적용하면, `width`, `height`, `fill` 값을 Props로 동적으로 조정할 수 있다.
+
+---
+
+## @svgr/cli 커스텀 템플릿 적용
+
+SVGR은 변환된 React 컴포넌트를 **커스텀 템플릿을 사용해 원하는 형식으로 출력**할 수 있다.
+
+앞서 설명한 option들이 svg 파일을 리액트 컴포넌트로 변환하는 과정에서 적용되는 것이라면 template은 변환된 리액트 컴포넌트 결과를 customize 할 때 사용하는 옵션이다.
+
+즉, template에 작성된 형태로 리액트 컴포넌트가 생성된다.
+
+### 1️⃣ 템플릿 파일 작성 (`svg-template.js`)
+
+```js
+// svg-template.js
+
+const comments = `
+/* this is comments */
+`;
+
+const template = (variables, { tpl }) => {
+  return tpl`
+    ${comments}
+    ${`\n`}
+    /* Auto-generated SVG Component */
+    ${variables.imports}
+    ${`\n`}
+
+    const ${variables.componentName} = (${variables.props}) => (
+      ${variables.jsx}
+    );
+    
+    ${variables.exports}
+  `;
+};
+
+module.exports = template;
+```
+
+### 2️⃣ 템플릿 적용하여 변환 실행
+
+이렇게 작성된 template 파일은 --template 옵션과 함께 사용한다.
+
+```bash
+npx @svgr/cli <아이콘 파일 경로> --config-file ./.svgrrc.js --template ./svg-template.js
+```
+
+---
+
+## Icon 컴포넌트로 아이콘 관리하기
+
+아이콘을 효율적으로 관리하기 위해, 개별 아이콘을 직접 import하는 대신 `Icon` 컴포넌트를 만들어 사용하는 것이 좋다.
+
+위 과정을 통해 작성된 컴포넌트는 "outDir": "./src/Icons" 옵션에 따라 ./src/Icons 폴더 내에 생성되어 아래와 같은 폴더 구조를 갖는다
+
+### 1️⃣ 폴더 구조
+
+```
+src
+ ├── components
+ │   ├── Icon.tsx
+ │   ├── Icons
+ │   │   ├── ArrowLeft.svg
+ │   │   ├── ArrowRight.svg
+```
+
+### 2️⃣ 아이콘 사용 예시 - 직접 아이콘 Import 하기
+
+생성된 아이콘은 아래와 같이 불러와서 사용할 수 있다.
+
+```tsx
+import React from "react";
+
+import { ArrowLeft } from "./src/Icons";
+
+const Home = () => {
+  return (
+    <div>
+      <ArrowLeft />
+    </div>
+  );
+};
+
+export default Home;
+```
+
+하지만 이와 같은 방법은 사용하는 아이콘이 생길 때 마다 아이콘을 불러오는 import를 계속해서 추가해야 하는 불편함이 있다.
+
+```tsx
+import React from "react";
+
+import { ArrowLeft } from "./src/Icons";
+import { ArrowRight } from "./src/Icons";
+import { ArrowDown } from "./src/Icons";
+import { ArrowUp } from "./src/Icons";
+
+const Home = () => {
+  return (
+    <div>
+      <ArrowLeft />
+      <ArrowRight />
+      <ArrowDown />
+      <ArrowUp />
+    </div>
+  );
+};
+
+export default Home;
+```
+
+이러한 문제를 Icon이라는 컴포넌트를 만들고, 해당 컴포넌트를 사용해서 모든 아이콘을 불러오는 방식으로 해결할 수 있다.
+
+즉, 외부에서는 Icon 컴포넌트를 사용하는 방식으로 인터페이스를 통일 한다면 필요한 아이콘을 사용할 때 마다 import를 일일이 추가할 필요없이 Icon 컴포넌트 하나만 import 하면 된다.
+
+### 3️⃣ 아이콘 사용 예시 - `Icon.tsx` 컴포넌트 작성
+
+Icon 컴포넌트 코드는 다음과 같다. 이 때 svg에서 변환된 리액트 컴포넌트가 저장되는 폴더와 동일하게 위치하도록 한다.
+
+```tsx
+import React from "react";
+import * as Icons from "./Icons";
+
+type IconName = keyof typeof Icons;
+
+type IconProps = Omit<React.SVGProps<SVGSVGElement>, "name"> & {
+  name: IconName;
+};
+
+export const Icon = ({ name, ...props }: IconProps) => {
+  const Component = Icons[name];
+  return <Component {...props} />;
+};
+```
+
+```tsx
+import { Icon } from "@/components/Icon";
+
+export default function Home() {
+  return (
+    <div>
+      <Icon name="ArrowLeft" width={24} height={24} fill="black" />
+      <Icon name="ArrowRight" width={24} height={24} fill="black" />
+    </div>
+  );
+}
+```
+
+✅ **이 방식의 장점:**
+
+- 아이콘 import를 자동화하여 **유지보수가 쉬워진다.**
+- Props를 활용해 **아이콘 크기 및 색상을 동적으로 변경 가능**
+- **새로운 아이콘이 추가될 때 별도 import 필요가 없다**
+
+---
+
+## 마무리
+
+정리하면 `@svgr/cli`를 사용해서 SVG를 React 컴포넌트로 변환해서 관리하게 되면 다음과 같은 장점을 갖게 ㄱ된다
+
+1. **SVGR을 사용하면 SVG 파일을 React 컴포넌트처럼 다룰 수 있다**
+2. **CLI 명령어를 활용해 간단히 변환 가능하고, 설정 파일을 통해 자동화 가능**
+3. **템플릿을 사용해 변환된 코드 형식을 커스터마이징 가능**
+4. **Icon 컴포넌트를 만들어 아이콘을 효율적으로 관리할 수 있음**

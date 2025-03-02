@@ -28,5 +28,10 @@
     "title": "nuqs를 사용해서 쿼리 파라미터 관리하기",
     "date": "2025.02.11",
     "route": "nuqs"
+  },
+  {
+    "title": "@svgr/cli을 사용해서 svg 형식의 아이콘을 리액트 컴포넌트로 관리하기",
+    "date": "2025.03.02",
+    "route": "svgr-cli"
   }
 ]
