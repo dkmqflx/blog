@@ -5,6 +5,11 @@
     "route": "frontend-env"
   },
   {
+    "title": "Next.js 13에서 Jest와 React Testing Library로 테스트 환경 설정하기",
+    "date": "2023.12.23",
+    "route": "next13-testing"
+  },
+  {
     "title": "@svgr/cli을 사용해서 svg 형식의 아이콘을 리액트 컴포넌트로 관리하기",
     "date": "2024.01.21",
     "route": "svgr-cli"
