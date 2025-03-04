@@ -5,6 +5,11 @@
     "route": "frontend-env"
   },
   {
+    "title": "@svgr/cli을 사용해서 svg 형식의 아이콘을 리액트 컴포넌트로 관리하기",
+    "date": "2024.01.21",
+    "route": "svgr-cli"
+  },
+  {
     "title": "Next.js로 블로그를 다시 만들게된 이유와 느낀점",
     "date": "2024.10.18",
     "route": "nextjs-blog"
@@ -33,10 +38,5 @@
     "title": "nuqs를 사용해서 쿼리 파라미터 관리하기",
     "date": "2025.02.11",
     "route": "nuqs"
-  },
-  {
-    "title": "@svgr/cli을 사용해서 svg 형식의 아이콘을 리액트 컴포넌트로 관리하기",
-    "date": "2025.03.02",
-    "route": "svgr-cli"
   }
 ]
