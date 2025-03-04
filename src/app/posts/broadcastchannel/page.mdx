@@ -1,11 +1,11 @@
-import Meta from '@/components/Meta';
+import Meta from "@/components/Meta";
 
 export const metadata = {
-  title: 'Broadcastchannel API로 서로 다른 탭 사이에 통신하기',
+  title: "Broadcastchannel API로 서로 다른 탭 사이에 통신하기",
   description:
-    'BroadcastChannel API와 React 환경에서 사용할 수 있는 방법에 대한 글입니다.',
-  date: '2024.12.08',
-  route: 'broadcastchannel',
+    "BroadcastChannel API와 React 환경에서 사용할 수 있는 방법에 대한 글입니다.",
+  date: "2022.11.10",
+  route: "broadcastchannel",
 };
 
 <Meta metadata={metadata} />
@@ -38,7 +38,7 @@ const broadcastChannel = new BroadcastChannel(CHANNEL_NAME);
 
 ```js
 const sendBroadcastChannel = new BroadcastChannel(CHANNEL_NAME);
-sendBroadcastChannel.postMessage('new Message!');
+sendBroadcastChannel.postMessage("new Message!");
 ```
 
 전달된 메시지는 아래와 같이 동일한 `CHANNEL_NAME`을 사용하는 다른 BroadcastChannel 객체에서 수신할 수 있으며, onmessage 이벤트를 통해 접근 가능하다.
@@ -66,9 +66,9 @@ React 환경에서도 BroadcastChannel을 활용하여 다중 탭 간 통신을 
 ```jsx
 // hooks/useBroadCastChannel.jsx
 
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState } from "react";
 
-const CHANNEL_NAME = 'newtab';
+const CHANNEL_NAME = "newtab";
 
 const useBroadCastChannel = () => {
   const channel = useRef(null);
@@ -81,7 +81,7 @@ const useBroadCastChannel = () => {
 
   // 새로운 탭을 여는 함수
   const openNewTab = () => {
-    window.open('/newtab', '_blank');
+    window.open("/newtab", "_blank");
   };
 
   useEffect(() => {
@@ -91,11 +91,11 @@ const useBroadCastChannel = () => {
     const messageHandler = (event) => {
       setData(event.data);
     };
-    channel.current.addEventListener('message', messageHandler);
+    channel.current.addEventListener("message", messageHandler);
 
     return () => {
       // 메시지 이벤트 리스너 해제
-      channel.current?.removeEventListener('message', messageHandler);
+      channel.current?.removeEventListener("message", messageHandler);
     };
   }, []);
 
@@ -123,14 +123,14 @@ Home 컴포넌트는 새로운 탭에서 보낸 메시지를 수신하여 화면
 
 ```js
 // pages/Home.js
-import useBroadCastChannel from '@/src/hooks/useBroadCastChannel';
+import useBroadCastChannel from "@/src/hooks/useBroadCastChannel";
 
 export default function Home() {
   const { data, openNewTab } = useBroadCastChannel();
 
   return (
     <div>
-      <div>Received Data: {data || 'No data yet'}</div>
+      <div>Received Data: {data || "No data yet"}</div>
       <button onClick={openNewTab}>Open New Tab</button>
     </div>
   );
@@ -141,7 +141,7 @@ newtab 컴포넌트는 메시지를 입력받아 기존 탭으로 전달한다.
 
 ```js
 // pages/newtab.jsx
-import useBroadCastChannel from '@/src/hooks/useBroadCastChannel';
+import useBroadCastChannel from "@/src/hooks/useBroadCastChannel";
 
 const NewTab = () => {
   const { postMessage } = useBroadCastChannel();

@@ -1,5 +1,10 @@
 [
   {
+    "title": "Broadcastchannel API로 서로 다른 탭 사이에 통신하기",
+    "date": "2022.11.10",
+    "route": "broadcastchannel"
+  },
+  {
     "title": "프론트엔드 개발 환경 자동화: 코드 컨벤션 지키기 (Husky, Commitlint, Lint, Prettier, Stylelint)",
     "date": "2023.12.10",
     "route": "frontend-env"
@@ -8,6 +13,11 @@
     "title": "Next.js 13에서 Jest와 React Testing Library로 테스트 환경 설정하기",
     "date": "2023.12.23",
     "route": "next13-testing"
+  },
+  {
+    "title": "해커와 화가를 읽고",
+    "date": "2024.02.17",
+    "route": "hackers-and-painters"
   },
   {
     "title": "@svgr/cli을 사용해서 svg 형식의 아이콘을 리액트 컴포넌트로 관리하기",
@@ -24,21 +34,13 @@
     "date": "2024.11.08",
     "route": "knip"
   },
-  {
-    "title": "Broadcastchannel API로 서로 다른 탭 사이에 통신하기",
-    "date": "2024.12.08",
-    "route": "broadcastchannel"
-  },
+
   {
     "title": "호치민에서 개발자로 2주 살기",
     "date": "2025.01.19",
     "route": "hochiminh"
   },
-  {
-    "title": "해커와 화가를 읽고",
-    "date": "2025.02.02",
-    "route": "hackers-and-painters"
-  },
+
   {
     "title": "nuqs를 사용해서 쿼리 파라미터 관리하기",
     "date": "2025.02.11",
