@@ -35,7 +35,11 @@
     "date": "2024.02.17",
     "route": "hackers-and-painters"
   },
-
+  {
+    "title": "개발자로 살아남기를 읽고",
+    "date": "2024.03.31",
+    "route": "developer-survive"
+  },
   {
     "title": "Next.js로 블로그를 다시 만들게된 이유와 느낀점",
     "date": "2024.10.18",
