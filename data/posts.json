@@ -1,5 +1,10 @@
 [
   {
+    "title": "화살표 함수를 super 키워드로 호출하면 에러가 발생하는 이유",
+    "date": "2022.06.14",
+    "route": "js-super-arrow-function"
+  },
+  {
     "title": "Broadcastchannel API로 서로 다른 탭 사이에 통신하기",
     "date": "2022.11.10",
     "route": "broadcastchannel"
