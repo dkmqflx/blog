@@ -1,9 +1,10 @@
 import Meta from "@/components/Meta";
 
 export const metadata = {
-  title: "Broadcastchannel API로 서로 다른 탭 사이에 통신하기",
+  title:
+    "BroadcastChannel API를 활용해서 서로 다른 컨텍스트 간에 커뮤니케이션 하기",
   description:
-    "BroadcastChannel API와 React 환경에서 사용할 수 있는 방법에 대한 글입니다.",
+    "BroadcastChannel API의 활용 방법과 React 환경에서의 사용 방식에 대해 설명합니다.",
   date: "2022.11.10",
   route: "broadcastchannel",
 };
@@ -12,161 +13,269 @@ export const metadata = {
 
 ## 들어가며
 
-개발을 진행하다보면 다른 탭 사이에 데이터를 전달해야 하는 경우가 있다. 예를들어 새로운 탭을 열고 해당 탭에 이전 탭에의 데이터를 전달하는 경우이다.
+프론트엔드 애플리케이션을 개발하다 보면 서로 다른 탭 사이에 데이터를 전달해야하는 상황을 마주칠 수 있습니다. OAuth 인증 후 메인 탭으로 상태 전달, 멀티 탭 애플리케이션의 상태 동기화, 실시간 알림 시스템 구현 등 다양한 상황에서 사용될 수 있습니다.
 
-해결방법으로는 여려가지가 있을 수 있겠으나 그 중에서도 BroadcastChannel을 사용하면 다른 탭 사이의 데이터 전송을 손 쉽게 구현할 수 있다.
+이러한 요구사항을 해결하기 위한 여러 접근 방식이 있지만, 오늘은 Web API 중 하나인 BroadcastChannel을 활용한 방식에 대해 알아보도록 하겠습니다.
 
 ---
 
 ## BroadcastChannel
 
-BroadcastChannel은 동일한 Origin을 가진 서로 다른 브라우저 창, 탭, iframe 간 통신을 가능하게 해주는 브라우저 API이다.
+BroadcastChannel은 동일한 Origin 컨텍스트 내에서 브라우저 창, 탭, iframe 간의 안전한 통신을 가능하게 해주는 Web API입니다.
+이는 다중 탭이나 창 간에 데이터를 손쉽게 주고받을 수 있도록 합니다.
 
-이는 복잡한 메시지 전송 메커니즘을 단순화하여 다중 탭이나 창 간에 데이터를 손쉽게 주고받을 수 있도록 한다.
+### 작동 원리
 
-아래는 BroadcastChannel 객체를 생성하는 방법이다.
+BroadcastChannel의 인스턴스를 생성하는 방법은 다음과 같습니다:
 
-```js
+```ts
 const broadcastChannel = new BroadcastChannel(CHANNEL_NAME);
 ```
 
-`CHANNEL_NAME`은 통신에 사용될 채널의 이름이며, 동일한 Origin에서는 동일한 이름의 BroadcastChannel이 공유된다. 따라서 중복된 이름으로 여러 BroadcastChannel을 생성하더라도 동일한 채널로 간주된다..
+BroadcastChannel를 사용할 때 주의해야 할 점은 다음과 같습니다:
 
-생성된 BroadcastChannel 객체는 postMessage 메서드를 통해 메시지를 전송할 수 있다.
+1. **메모리 관리**: 채널은 가비지 컬렉션의 대상이 되며, 모든 참조가 해제되면 자동으로 정리됩니다.
+2. **동시성 처리**: 메시지는 비동기적으로 처리되며, 이벤트 루프를 통해 전달됩니다.
+3. **직렬화 제약**: 전송되는 데이터는 [구조적 복제 알고리즘](https://developer.mozilla.org/en-US/docs/Web/API/Web_components/Using_custom_elements#custom_element_lifecycle_callbacks)을 통해 직렬화되므로, 함수나 Symbol 등은 전송할 수 없습니다.
 
-이 메시지는 같은 이름의 BroadcastChannel을 리스닝하고 있는 모든 인스턴스에 전달된다.
+### 메시지 전송
 
-```js
+메시지 전송은 다음과 같이 구현할 수 있습니다:
+
+```ts
 const sendBroadcastChannel = new BroadcastChannel(CHANNEL_NAME);
-sendBroadcastChannel.postMessage("new Message!");
+// 구조적 복제가 가능한 데이터만 전송
+sendBroadcastChannel.postMessage({
+  type: "USER_ACTION",
+  payload: { id: 1, timestamp: Date.now() },
+});
 ```
 
-전달된 메시지는 아래와 같이 동일한 `CHANNEL_NAME`을 사용하는 다른 BroadcastChannel 객체에서 수신할 수 있으며, onmessage 이벤트를 통해 접근 가능하다.
+전달된 메시지는 아래와 같이 동일한 `CHANNEL_NAME`을 사용하는 다른 BroadcastChannel 객체에서 수신할 수 있으며, 아래와 같은 이벤트 핸들러를 통해 접근 가능합니다.
 
-```js
+### 메시지 수신 방식
+
+BroadcastChannel에서 메시지를 수신하는 방법에는 두 가지가 있습니다:
+
+1. **addEventListener 방식** (권장)
+
+```ts
+const receiveBroadcastChannel = new BroadcastChannel(CHANNEL_NAME);
+
+const messageHandler = (event: MessageEvent) => {
+  const { type, payload } = event.data;
+  console.log("Received:", payload);
+};
+
+// 이벤트 리스너 등록
+receiveBroadcastChannel.addEventListener("message", messageHandler);
+
+// 이벤트 리스너 제거
+receiveBroadcastChannel.removeEventListener("message", messageHandler);
+receiveBroadcastChannel.close();
+```
+
+2. **onmessage 속성 방식**
+
+```ts
 const receiveBroadcastChannel = new BroadcastChannel(CHANNEL_NAME);
 
 receiveBroadcastChannel.onmessage = (event) => {
-  console.log(event.data); //  'new Message!'
+  const { type, payload } = event.data;
+  console.log("Received:", payload);
 };
 ```
 
-이처럼 BroadcastChannel은 간단한 API로 탭 간 통신을 손쉽게 구현할 수 있다.
+이벤트 객체는 아래와 같은 프로퍼티를 가지고 있습니다:
 
-브라우저에서 기본적으로 제공하는 API이므로 별도의 라이브러리 없이도 사용할 수 있다는 장점이 있다.
+- `event.data`: 전송된 실제 메시지 데이터
+- `event.origin`: 메시지의 출처 (보안 검증에 활용)
+- `event.lastEventId`: 이벤트의 고유 식별자
+- `event.source`: 메시지를 보낸 BroadcastChannel 인스턴스
 
 ---
 
-## React에서 BroadcastChannel을 사용하는 Custom Hook 만들기
+## React 환경에서의 사용하기
 
-React 환경에서도 BroadcastChannel을 활용하여 다중 탭 간 통신을 구현할 수 있다.
+React 환경에서 BroadcastChannel을 효과적으로 활용하기 위해, TypeScript와 함께 타입 안전성이 보장된 Custom Hook을 구현해보겠습니다.
 
-아래는 React에서 사용할 수 있는 BroadcastChannel용 Custom Hook의 구현한 코드이다.
-
-```jsx
-// hooks/useBroadCastChannel.jsx
+````tsx
+// hooks/useBroadcastChannel.tsx
 
 import { useEffect, useRef, useState } from "react";
 
-const CHANNEL_NAME = "newtab";
+/**
+ * 메시지 타입 정의
+ * @template T - 메시지 페이로드의 타입
+ * @property type - 메시지의 종류를 구분하는 문자열
+ * @property payload - 실제 전달할 데이터
+ */
+type Message<T = unknown> = {
+  type: string;
+  payload: T;
+};
 
-const useBroadCastChannel = () => {
-  const channel = useRef(null);
-  const [data, setData] = useState(null);
+/**
+ * BroadcastChannel Hook의 반환 타입
+ * @template T - 메시지 페이로드의 타입
+ * @property postMessage - 메시지를 전송하는 함수
+ * @property data - 수신된 최신 메시지
+ * @property openNewTab - 새 탭을 여는 유틸리티 함수
+ */
+type BroadcastChannelHook<T> = {
+  postMessage: (message: Message<T>) => void;
+  data: Message<T> | null;
+  openNewTab: (path?: string) => void;
+};
 
-  // 메시지를 보내는 함수
-  const postMessage = (message) => {
-    channel.current?.postMessage(message);
+// 채널 이름 상수 정의
+const CHANNEL_NAME = "app-communication";
+
+/**
+ * BroadcastChannel을 React에서 쉽게 사용할 수 있게 해주는 Custom Hook
+ * @template T - 메시지 페이로드의 타입 파라미터
+ * @returns {BroadcastChannelHook<T>} Hook의 반환값
+ *
+ * @example
+ * ```tsx
+ * const { postMessage, data, openNewTab } = useBroadcastChannel<UserAction>();
+ *
+ * // 메시지 전송
+ * postMessage({ type: 'USER_LOGIN', payload: { userId: '123' } });
+ *
+ * // 새 탭 열기
+ * openNewTab('/auth');
+ * ```
+ */
+export const useBroadcastChannel = <
+  T = unknown,
+>(): BroadcastChannelHook<T> => {
+  // BroadcastChannel 인스턴스를 참조로 관리
+  // useRef를 사용하여 리렌더링 간에 인스턴스 유지
+  const channelRef = useRef<BroadcastChannel | null>(null);
+
+  // 수신된 최신 메시지를 상태로 관리
+  const [data, setData] = useState<Message<T> | null>(null);
+
+  /**
+   * 메시지를 다른 탭으로 전송하는 함수
+   * @param message - 전송할 메시지 객체
+   */
+  const postMessage = (message: Message<T>) => {
+    if (!channelRef.current) return;
+
+    try {
+      channelRef.current.postMessage(message);
+    } catch (error) {
+      console.error("Failed to post message:", error);
+    }
   };
 
-  // 새로운 탭을 여는 함수
-  const openNewTab = () => {
-    window.open("/newtab", "_blank");
+  /**
+   * 새 탭을 여는 유틸리티 함수
+   * @param path - 새 탭에서 열 경로
+   */
+  const openNewTab = (path) => {
+    // noopener,noreferrer로 보안 취약점 방지
+    window.open(path, "_blank", "noopener,noreferrer");
   };
 
   useEffect(() => {
-    channel.current = new BroadcastChannel(CHANNEL_NAME);
+    // 컴포넌트 마운트 시 BroadcastChannel 인스턴스 생성
+    if (!channelRef.current) {
+      channelRef.current = new BroadcastChannel(CHANNEL_NAME);
+    }
+
+    /**
+     * 메시지 수신 이벤트 핸들러
+     * @param event - MessageEvent 객체
+     */
+    const messageHandler = (event: MessageEvent) => {
+      try {
+        setData(event.data as Message<T>);
+      } catch (error) {
+        console.error("Failed to process message:", error);
+      }
+    };
 
     // 메시지 이벤트 리스너 등록
-    const messageHandler = (event) => {
-      setData(event.data);
-    };
-    channel.current.addEventListener("message", messageHandler);
+    channelRef.current.addEventListener("message", messageHandler);
 
+    // 클린업 함수: 컴포넌트 언마운트 시 실행
     return () => {
-      // 메시지 이벤트 리스너 해제
-      channel.current?.removeEventListener("message", messageHandler);
+      // 이벤트 리스너 제거 및 채널 정리
+      channelRef.current?.removeEventListener("message", messageHandler);
+      channelRef.current?.close();
+      channelRef.current = null;
     };
-  }, []);
+  }, []); // 빈 의존성 배열로 마운트/언마운트 시에만 실행
 
   return { postMessage, data, openNewTab };
 };
+````
 
-export default useBroadCastChannel;
-```
+### 실제 활용 예제:
 
-위 코드의 Custom Hook의 주요 기능을 정리하자면 다음과 같다
+다음은 위에서 구현한 Hook을 활용한 사용 예제입니다:
 
-1. postMessage: 메시지를 지정된 BroadcastChannel로 전송한다.
+```tsx
+// components/Home.tsx
+import { useBroadcastChannel } from "@/hooks/useBroadcastChannel";
+import { useCallback } from "react";
 
-2. data: 메시지 이벤트가 발생할 때 수신된 데이터를 상태로 저장한다.
-
-3. openNewTab: 새로운 탭을 열어 `/newtab` 경로를 표시한다.
-
----
-
-## Custom Hook 사용 예제
-
-아래는 위에서 정의한 useBroadCastChannel Hook을 활용하여 다중 탭 간 메시지를 송수신하는 예제이다.
-
-Home 컴포넌트는 새로운 탭에서 보낸 메시지를 수신하여 화면에 표시한다.
-
-```js
-// pages/Home.js
-import useBroadCastChannel from "@/src/hooks/useBroadCastChannel";
+type UserAction = {
+  userId: string;
+  action: "login" | "logout";
+  timestamp: number;
+};
 
 export default function Home() {
-  const { data, openNewTab } = useBroadCastChannel();
+  const { data, openNewTab } = useBroadcastChannel<UserAction>();
+
+  const handleNewTab = useCallback(() => {
+    openNewTab("/auth");
+  }, [openNewTab]);
 
   return (
-    <div>
-      <div>Received Data: {data || "No data yet"}</div>
-      <button onClick={openNewTab}>Open New Tab</button>
+    <div className="p-4">
+      <div className="mb-4">
+        {data && (
+          <div className="rounded-lg bg-gray-100 p-4">
+            <h3 className="font-semibold">수신된 사용자 액션:</h3>
+            <pre className="mt-2 text-sm">{JSON.stringify(data, null, 2)}</pre>
+          </div>
+        )}
+      </div>
+      <button
+        onClick={handleNewTab}
+        className="rounded-md bg-blue-500 px-4 py-2 text-white hover:bg-blue-600"
+      >
+        인증 창 열기
+      </button>
     </div>
   );
 }
 ```
 
-newtab 컴포넌트는 메시지를 입력받아 기존 탭으로 전달한다.
+---
 
-```js
-// pages/newtab.jsx
-import useBroadCastChannel from "@/src/hooks/useBroadCastChannel";
+## 마치며
 
-const NewTab = () => {
-  const { postMessage } = useBroadCastChannel();
+지금까지 BroadcastChannel API를 활용하여 브라우저의 서로 다른 탭이나 창 간의 통신을 구현하는 방법에 대해 알아보았습니다. 정리하면 다음과 같습니다:
 
-  const onSubmit = (e) => {
-    e.preventDefault();
-    const message = e.target.data.value;
-    postMessage(message);
-  };
+### 주요 특징
 
-  return (
-    <form onSubmit={onSubmit}>
-      <input type="text" name="data" placeholder="Enter message" />
-      <button type="submit">Send</button>
-    </form>
-  );
-};
+- 동일 출처(Origin) 내에서 안전한 탭 간 통신 가능
+- 간단한 API로 복잡한 통신 구현 가능
+- 브라우저 내장 API로 별도 라이브러리 불필요
 
-export default NewTab;
-```
+### 활용 사례
 
-위 코드가 동작하는 방법을 정리하자면 다음과 같다
+- OAuth 인증 후 메인 탭으로 상태 전달
+- 멀티 탭 애플리케이션의 상태 동기화
+- 실시간 알림 시스템 구현
+- 협업 도구에서의 실시간 데이터 공유
 
-1. Home에서 Open New Tab 버튼 클릭: 새로운 탭(/newtab)이 열린다.
+BroadcastChannel API는 간단하면서도 강력한 브라우저 API로, 적절히 활용하면 복잡한 탭 간 통신 요구사항도 효율적으로 해결할 수 있습니다.
 
-2. 새로운 탭에서 메시지 전송: 폼에 데이터를 입력하고 전송 버튼을 누르면 메시지가 BroadcastChannel을 통해 전달된다.
-
-3. Home에서 메시지 수신: 전달된 메시지가 실시간으로 화면에 표시된다.
+특히 React와 같은 라이브러리와 함께 사용하면, 타입 안전성과 컴포넌트 생명주기를 고려한 안정적인 구현이 가능합니다.
