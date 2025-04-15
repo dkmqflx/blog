@@ -4,6 +4,8 @@ export default function Layout({
   children: React.ReactNode;
 }>) {
   return (
-    <article className="prose dark:prose-invert mb-10">{children}</article>
+    <article className="prose dark:prose-invert max-w-none w-full mb-10">
+      {children}
+    </article>
   );
 }
