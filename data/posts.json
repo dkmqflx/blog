@@ -19,16 +19,23 @@
     "date": "2023.12.23",
     "route": "next13-testing"
   },
+
+  {
+    "title": "@svgr/cli을 사용해서 svg 형식의 아이콘을 리액트 컴포넌트로 관리하기",
+    "date": "2024.01.07",
+    "route": "svgr-cli"
+  },
+  {
+    "title": "TSDoc과 Todo Tree 사용해서 효과적으로 주석 작성하기",
+    "date": "2024.01.21",
+    "route": "comments-tsdoc-todotree"
+  },
   {
     "title": "해커와 화가를 읽고",
     "date": "2024.02.17",
     "route": "hackers-and-painters"
   },
-  {
-    "title": "@svgr/cli을 사용해서 svg 형식의 아이콘을 리액트 컴포넌트로 관리하기",
-    "date": "2024.01.21",
-    "route": "svgr-cli"
-  },
+
   {
     "title": "Next.js로 블로그를 다시 만들게된 이유와 느낀점",
     "date": "2024.10.18",
