@@ -4,43 +4,43 @@ export const metadata = {
   title:
     "프론트엔드 개발 환경 자동화: 코드 컨벤션 지키기 (Husky, Commitlint, Lint, Prettier, Stylelint)",
   description:
-    "협업을 원활하게 하기 위해서는 일관된 코드 스타일과 규칙이 필요하다. 커밋 메시지 작성 방식, 브랜치 전략 등 다양한 규칙을 정하지만, 결국 개발은 사람이 수행하는 작업이기 때문에 실수로 규칙을 어기는 경우가 많다. 문서화만으로는 이러한 실수를 방지하기 어려우므로, 자동으로 규칙을 강제하는 환경을 구축하면 더욱 효율적인 개발이 가능하다. 이 글에서는 Git Hooks, Husky, Commitlint, ESLint, Prettier, Stylelint 등을 활용하여 문서 없이도 코드 컨벤션을 강제할 수 있는 환경을 구축하는 방법을 정리한다.",
+    "Git Hooks, Husky, Commitlint, ESLint, Prettier, Stylelint 등을 활용하여 문서 없이도 코드 컨벤션을 강제할 수 있는 환경을 구축하는 방법을 정리했습니다.",
   date: "2023.12.10",
   route: "frontend-env",
 };
 
 <Meta metadata={metadata} />
 
-## 🚀 배경
+## 들어가며
 
-협업을 원활하게 하기 위해서는 **일관된 코드 스타일과 규칙**이 필요하다. 커밋 메시지 작성 방식, 브랜치 전략 등 다양한 규칙을 정하지만, 결국 개발은 사람이 수행하는 작업이기 때문에 실수로 규칙을 어기는 경우가 많다. 문서화만으로는 이러한 실수를 방지하기 어려우므로, **자동으로 규칙을 강제하는 환경을 구축하면 더욱 효율적인 개발이 가능하다.**
+협업을 원활하게 하기 위해서는 **일관된 코드 스타일과 규칙**이 필요합니다. 커밋 메시지 작성 방식, 브랜치 전략 등 다양한 규칙을 정하지만, 결국 개발은 사람이 수행하는 작업이기 때문에 실수로 규칙을 어기는 경우가 많습니다. 문서화만으로는 이러한 실수를 방지하기 어려우므로, **자동으로 규칙을 강제하는 환경을 구축하면 더욱 효율적인 개발이 가능합니다.**
 
-이 글에서는 Git Hooks, Husky, Commitlint, ESLint, Prettier, Stylelint 등을 활용하여 **문서 없이도 코드 컨벤션을 강제할 수 있는 환경을 구축하는 방법**을 정리한다.
+이 글에서는 Git Hooks, Husky, Commitlint, ESLint, Prettier, Stylelint 등을 활용하여 **문서 없이도 코드 컨벤션을 강제할 수 있는 환경을 구축하는 방법**을 정리했습니다.
 
 ---
 
-## 🔹 Git Hooks
+## Git Hooks
 
-필요한 도구들을 도입하기에 앞서 우선 **Git Hooks**에 대한 이해가 필요하다.
+필요한 도구들을 도입하기에 앞서 우선 **Git Hooks**에 대한 이해가 필요합니다.
 
-**Git Hooks**은 특정 Git 이벤트가 발생할 때 자동으로 실행되는 스크립트이다. 예를 들어:
+**Git Hooks**은 특정 Git 이벤트가 발생할 때 자동으로 실행되는 스크립트입니다. 예를 들어:
 
 ```sh
 $ cd .git/hooks
 $ ls -a
 
-# 아래와 같이 다양한 hook이 있는 것을 확인할 수 있다.
+# 아래와 같이 다양한 hook이 있는 것을 확인할 수 있습니다.
 applypatch-msg.sample     post-update.sample        pre-merge-commit.sample   pre-receive.sample        update.sample
 commit-msg.sample         pre-applypatch.sample     pre-push.sample           prepare-commit-msg.sample
 fsmonitor-watchman.sample pre-commit.sample         pre-rebase.sample         push-to-checkout.sample
 
 ```
 
-위 명령어를 실행하면 여러 개의 Hook 파일을 확인할 수 있다.
+위 명령어를 실행하면 여러 개의 Hook 파일을 확인할 수 있습니다.
 
-그리고 `.sample` 확장자를 제거하면 해당 Hook을 활성화할 수 있다.
+그리고 `.sample` 확장자를 제거하면 해당 Hook을 활성화할 수 있습니다.
 
-예를 들어 `pre-commit` Hook은 커밋 전에 실행되는 스크립트이며, 아래처럼 설정하면 커밋할 때마다 "pre-commit!"이 출력된다.
+예를 들어 `pre-commit` Hook은 커밋 전에 실행되는 스크립트이며, 아래처럼 설정하면 커밋할 때마다 "pre-commit!"이 출력됩니다.
 
 ```sh
 # .git/hooks/pre-commit
@@ -48,19 +48,19 @@ fsmonitor-watchman.sample pre-commit.sample         pre-rebase.sample         pu
 echo "pre-commit!"
 ```
 
-하지만 **Git Hooks는 .git 폴더 내부에 위치하기 때문에 원격 저장소에 공유할 수 없고**, 모든 팀원이 직접 설정해야 하는 번거로움이 있다. 이러한 문제를 해결하는 도구가 바로 **Husky**이다.
+하지만 **Git Hooks는 .git 폴더 내부에 위치하기 때문에 원격 저장소에 공유할 수 없고**, 모든 팀원이 직접 설정해야 하는 번거로움이 있습니다. 이러한 문제를 해결하는 도구가 바로 **Husky**입니다.
 
 ---
 
-## 🔹 Husky
+## Husky
 
-[Husky](https://typicode.github.io/husky/)는 Git Hooks를 쉽게 관리할 수 있도록 도와주는 라이브러리이다. 설치하면 `.husky` 폴더가 생성되며, 여기에 Git Hooks 스크립트를 작성하면 된다.
+[Husky](https://typicode.github.io/husky/)는 Git Hooks를 쉽게 관리할 수 있도록 도와주는 라이브러리입니다. 설치하면 `.husky` 폴더가 생성되며, 여기에 Git Hooks 스크립트를 작성하면 됩니다.
 
 ```sh
 $ npx husky-init && npm install
 ```
 
-예를 들어, pre-commit Hook을 추가하면 Git Hooks를 사용할 때와 동일하게 동작하지만, Git Hooks을 사용할 때와 달리 원격 저장소에 올릴 수 있기 때문에 이제 **모든 팀원이 동일한 Hook을 사용할 수 있도록 공유 가능하다.**
+예를 들어, pre-commit Hook을 추가하면 Git Hooks를 사용할 때와 동일하게 동작하지만, Git Hooks을 사용할 때와 달리 원격 저장소에 올릴 수 있기 때문에 이제 **모든 팀원이 동일한 Hook을 사용할 수 있도록 공유가 가능합니다.**
 
 ```sh
 # .husky/pre-commit
@@ -70,15 +70,15 @@ $ npx husky-init && npm install
 echo "husky pre-commit!"
 ```
 
-이제 팀원들이 자동으로 동일한 Git Hooks 환경을 갖출 수 있다.
+이제 팀원들이 자동으로 동일한 Git Hooks 환경을 갖출 수 있습니다.
 
 ---
 
-## 🔹 Git Flow
+## Git Flow
 
-Husky를 활용하면 **잘못된 브랜치에 직접 push하는 실수를 방지**할 수도 있다. 예를 들어 `develop`, `stage`, `master` 브랜치에는 직접 push하지 못하도록 설정할 수 있다.
+Husky를 활용하면 **잘못된 브랜치에 직접 push하는 실수를 방지**할 수도 있습니다. 예를 들어 `develop`, `stage`, `master` 브랜치에는 직접 push하지 못하도록 설정할 수 있습니다.
 
-pre-push hook은 말 그대로 git push 명령어를 입력했을 때 실행되는 Hook으로 커밋된 파일을 원격에 올리기 전에 실행된다.
+pre-push hook은 말 그대로 git push 명령어를 입력했을 때 실행되는 Hook으로 커밋된 파일을 원격에 올리기 전에 실행됩니다.
 
 ```sh
 # .husky/pre-push
@@ -93,7 +93,7 @@ if [ "$branch" = "master" ] || [ "$branch" = "stage" ] || [ "$branch" = "develop
 fi
 ```
 
-이제 master 브랜치에 직접 push를 하면 다음과 같은 메시지가 출력되면서 push가 차단된다.
+이제 master 브랜치에 직접 push를 하면 다음과 같은 메시지가 출력되면서 push가 차단됩니다.
 
 ```sh
 $ git push origin master
@@ -102,21 +102,21 @@ $ git push origin master
 
 ---
 
-## 🔹 Commitlint: 커밋 메시지 컨벤션 강제
+## Commitlint: 커밋 메시지 컨벤션 강제
 
-커밋의 목적을 명확하게 나타내고 협업을 원활하게 하기 위해 커밋 컨벤션을 정한다. type으로 허용되는 키워드, subject의 사용 유무와 같은 여러 컨벤션을 정하지만 실제로 커밋 메시지를 보면 컨벤션을 지키지 않는 경우가 많다.
+커밋의 목적을 명확하게 나타내고 협업을 원활하게 하기 위해 커밋 컨벤션을 정합니다. type으로 허용되는 키워드, subject의 사용 유무와 같은 여러 컨벤션을 정하지만 실제로 커밋 메시지를 보면 컨벤션을 지키지 않는 경우가 많습니다.
 
-이 때 [Commitlint](https://commitlint.js.org/#/guides-local-setup?id=guide-local-setup)라는 도구를 도입하면 커밋 명령어를 작성할 때 컨벤션을 강제하기 때문에 커밋 컨벤션이 지켜지지 않는 상황을 사전에 막을 수 있다. 예를 들어, `feat`, `fix`, `refactor` 등 지정한 키워드만 사용할 수 있도록 강제할 수 있다.
+이 때 [Commitlint](https://commitlint.js.org/#/guides-local-setup?id=guide-local-setup)라는 도구를 도입하면 커밋 명령어를 작성할 때 컨벤션을 강제하기 때문에 커밋 컨벤션이 지켜지지 않는 상황을 사전에 막을 수 있습니다. 예를 들어, `feat`, `fix`, `refactor` 등 지정한 키워드만 사용할 수 있도록 강제할 수 있습니다.
 
-우선 공식문서에 따라 Commitlint를 설치한 다음, 설정 파일을 생성하는 명령어를 실행한다.
+우선 공식문서에 따라 Commitlint를 설치한 다음, 설정 파일을 생성하는 명령어를 실행합니다.
 
 ```sh
 $ npm install --save-dev @commitlint/{cli,config-conventional}
 ```
 
-명령어를 실행하고 나면 commitlint.config.cjs 파일이 생성되는데 해당 파일에서 필요한 설정을 추가해줄 수 있다.
+명령어를 실행하고 나면 commitlint.config.cjs 파일이 생성되는데 해당 파일에서 필요한 설정을 추가해줄 수 있습니다.
 
-예를들어 “커밋의 type으로는 feat, fix, chore, refactor, test만 사용될 수 있다” 라는 컨벤션이 있다면 아래와 같이 rule을 추가해준다.
+예를 들어 "커밋의 type으로는 feat, fix, chore, refactor, test만 사용될 수 있습니다" 라는 컨벤션이 있다면 아래와 같이 rule을 추가해줍니다.
 
 ```js
 // commitlint.config.js
@@ -132,29 +132,29 @@ module.exports = {
 };
 ```
 
-여기서 각각의 rule은 배열로 Level, Applicable, Value라는 세가지 값을 전달받는데 각각의 역할은 다음과 같다.
+여기서 각각의 rule은 배열로 `Level`, `Applicable`, `Value`라는 세가지 값을 전달받는데 각각의 역할은 다음과 같습니다.
 
 - Level
 
-  - 규칙의 level을 정하는 값으로 0, 1, 2를 가질 수 있다.
+  - 규칙의 level을 정하는 값으로 0, 1, 2를 가질 수 있습니다.
 
-  - 0은 rule을 비활성화하고 1은 경고, 2는 오류로 처리한다.
+  - 0은 rule을 비활성화하고 1은 경고, 2는 오류로 처리합니다.
 
 - Applicable
 
-  - ’always' 또는 'never' 값을 가질 수 있다.
+  - 'always' 또는 'never' 값을 가질 수 있습니다.
 
-  - never는 규칙을 반전시킨다.
+  - never는 규칙을 반전시킵니다.
 
 - Value
 
-  - rule에 규칙에 사용할 값
+  - rule에 규칙에 사용할 값입니다.
 
-Husky와 연동하여, 올바르지 않은 커밋 메시지가 입력되면 커밋이 차단되도록 설정할 수 있다.
+Husky와 연동하여, 올바르지 않은 커밋 메시지가 입력되면 커밋이 차단되도록 설정할 수 있습니다.
 
-rule을 추가 한 다음 huksy 폴더 내부에 commit-msg 파일을 생성하고 아래처럼 명령어를 작성한다.
+rule을 추가 한 다음 huksy 폴더 내부에 commit-msg 파일을 생성하고 아래처럼 명령어를 작성합니다.
 
-commit-msg hook은 커밋 하기에 앞서 실행되는 Hook으로, 이전에 rule로 정해준 규칙에 위배된 커밋 메시지를 작성하게 되면 커밋이 되지 않는다.
+commit-msg hook은 커밋 하기에 앞서 실행되는 Hook으로, 이전에 rule로 정해준 규칙에 위배된 커밋 메시지를 작성하게 되면 커밋이 되지 않습니다.
 
 ```sh
 # .husky/commit-msg
@@ -165,23 +165,23 @@ echo "commit 컨벤션을 체크합니다."
 npx commitlint --edit $1
 ```
 
-이제 **잘못된 커밋 메시지를 입력하면 경고 메시지가 출력되면서 커밋이 차단된다.**
+이제 **잘못된 커밋 메시지를 입력하면 경고 메시지가 출력되면서 커밋이 차단됩니다.**
 
 ---
 
-## 🔹 ESLint & lint-staged: 코드 품질과 스타일 유지
+## ESLint & lint-staged: 코드 품질과 스타일 유지
 
-**ESLint**는 ECMAScript 코드에서 문법 오류를 검사하고, 일관된 코드 스타일을 유지할 수 있도록 도와주는 정적 분석 도구이다. 단순한 코드 스타일 검사뿐만 아니라, 버그가 발생할 가능성이 있는 코드를 감지하는 기능도 제공한다.
+**ESLint**는 ECMAScript 코드에서 문법 오류를 검사하고, 일관된 코드 스타일을 유지할 수 있도록 도와주는 정적 분석 도구입니다. 단순한 코드 스타일 검사뿐만 아니라, 버그가 발생할 가능성이 있는 코드를 감지하는 기능도 제공합니다.
 
 ### ESLint 설정
 
-ESLint를 프로젝트에 적용하려면 먼저 라이브러리를 설치해야 한다.
+ESLint를 프로젝트에 적용하려면 먼저 라이브러리를 설치해야 합니다.
 
 ```sh
 $ npm install --save-dev eslint
 ```
 
-ESLint를 설치 후 설정 파일 내부에서 다양한 설정을 해줄수 있다. 많은 키워드들이 있지만 extends, plugins, rules에 대해서 우선 이해를 하는게 중요한데, 각각의 키워드는 다음과 같은 역할을 한다.
+ESLint를 설치 후 설정 파일 내부에서 다양한 설정을 해줄 수 있습니다. 많은 키워드들이 있지만 extends, plugins, rules에 대해서 우선 이해를 하는게 중요한데, 각각의 키워드는 다음과 같은 역할을 합니다.
 
 - rules
 
@@ -189,14 +189,14 @@ ESLint를 설치 후 설정 파일 내부에서 다양한 설정을 해줄수 �
 
 - plugins
 
-  - ESLint에서 제공하는 기본적인 규칙 이외에도 다양한 규칙을 적용하고 싶은 경우 플러그인을 사용할 수 있다.
+  - ESLint에서 제공하는 기본적인 규칙 이외에도 다양한 규칙을 적용하고 싶은 경우 플러그인을 사용할 수 있습니다.
 
-  - 다만 주의할 점은 plugins의 배열 요소에 설치한 플러그인을 추가한다고 해서 자동으로 규칙들이이 적용되는 것이 아니라 플러그인에 있는 규칙들을 rules 객체에 추가해주어야 한다.
+  - 다만 주의할 점은 plugins의 배열 요소에 설치한 플러그인을 추가한다고 해서 자동으로 규칙들이 적용되는 것이 아니라 플러그인에 있는 규칙들을 rules 객체에 추가해주어야 합니다.
 
 - extends
-  - 이렇게 rules에 일일이 규칙을 추가하는 것은 번거로울 수 있습니다. 이 때 사용할 수 있는게 extends로 extends 배열에 설정 파일 관련된 패키지를 추가만 해주면 rules에 별도로 규칙을 추가할 필요 없이 규칙들을 바로 적용할 수 있다.
+  - 이렇게 rules에 일일이 규칙을 추가하는 것은 번거로울 수 있습니다. 이 때 사용할 수 있는게 extends로, extends 배열에 설정 파일 관련된 패키지를 추가만 해주면 rules에 별도로 규칙을 추가할 필요 없이 규칙들을 바로 적용할 수 있다.
 
-아래와 같이 설정 파일에 필요한 설정을 추가할 수 있다.
+아래와 같이 설정 파일에 필요한 설정을 추가할 수 있습니다.
 
 ```js
 // .eslintrc.js
@@ -218,17 +218,17 @@ module.exports = {
 
 ### lint-staged와의 연동
 
-프로젝트 규모가 커질수록 전체 코드베이스를 대상으로 ESLint를 실행하는 것은 비효율적이다.
+프로젝트 규모가 커질수록 전체 코드베이스를 대상으로 ESLint를 실행하는 것은 비효율적입니다.
 
-이러한 문제를 lint-staged를 사용해서 해결할 수 있는데 lint-staged는 stage 상태의 파일에만 lint가 적용될 수 있도록 도와주는 라이브러리로, pre-commit hook과 함께 사용하면 커밋할 때 lint 규칙이 적용되도록 할 수 있다.
+이러한 문제를 lint-staged를 사용해서 해결할 수 있는데 lint-staged는 stage 상태의 파일에만 lint가 적용될 수 있도록 도와주는 라이브러리로, pre-commit hook과 함께 사용하면 커밋할 때 lint 규칙이 적용되도록 할 수 있습니다.
 
-**lint-staged**를 활용하면 Git에 **staged된 파일만 대상으로 검사**를 실행하여 성능을 최적화할 수 있다.
+**lint-staged**를 활용하면 Git에 **staged된 파일만 대상으로 검사**를 실행하여 성능을 최적화할 수 있습니다.
 
 ```sh
 $ npm install --save-dev lint-staged
 ```
 
-설치 후 package.json에 스크립트와 lint가 적용될 파일의 확장자를 아래처럼 명시한다.
+설치 후 package.json에 스크립트와 lint가 적용될 파일의 확장자를 아래처럼 명시합니다.
 
 ```json
 // package.json
@@ -239,7 +239,7 @@ $ npm install --save-dev lint-staged
 }
 ```
 
-추가적으로 pre-commit hook에 위의 스크립트를 실행하는 코드를 추가한다.
+추가적으로 pre-commit hook에 위의 스크립트를 실행하는 코드를 추가합니다.
 
 ```sh
 # .husky/pre-commit
@@ -250,25 +250,25 @@ echo "commit 이전에 lint 규칙을 적용합니다"
 npx lint-staged
 ```
 
-이제 커밋을 하게 되면 staged 된 파일들을 대상으로만 lint가 적용되기 때문에 모든 파일을 대상으로 lint를 검사 했을 때 보다 더 빠르게 커밋을 완료할 수 있다.
+이제 커밋을 하게 되면 staged 된 파일들을 대상으로만 lint가 적용되기 때문에 모든 파일을 대상으로 lint를 검사 했을 때 보다 더 빠르게 커밋을 완료할 수 있습니다.
 
-지금까지는 husky를 사용해서 특정한 시점에 동작을 처리해서 컨벤션을 지킬 수 있는 방법에 대해 알아보았다면, 아래는 이번에는 husky를 사용하지는 않지만 컨벤션을 지킬 수 있는 방법들이다.
+지금까지는 husky를 사용해서 특정한 시점에 동작을 처리해서 컨벤션을 지킬 수 있는 방법에 대해 알아보았다면, 이번에는 husky를 사용하지는 않지만 컨벤션을 지킬 수 있는 방법들입니다.
 
 ---
 
-## 🔹 Prettier
+## Prettier
 
-Prettier는 일관된 코드 스타일을 유지하게 해주는 코드 포맷터이다다.
+Prettier는 일관된 코드 스타일을 유지하게 해주는 코드 포맷터입니다.
 
-앞서 설명한 ESLint도 일관된 코드 스타일을 유지할 수 있도록 도와주는 코드 포맷팅 역할을 하지만, Prettier가 코드 포맷팅에 더 특화되어 있는 만큼 보통 ESLint를 Prettier와 함께 사용한다.
+앞서 설명한 ESLint도 일관된 코드 스타일을 유지할 수 있도록 도와주는 코드 포맷팅 역할을 하지만, Prettier가 코드 포맷팅에 더 특화되어 있는 만큼 보통 ESLint를 Prettier와 함께 사용합니다.
 
-Prettier는 주로 코드 스타일의 일관성을 유지하고 ESLint는 코드 품질과 잠재적인 버그를 검사하는 데 사용된다.
+Prettier는 주로 코드 스타일의 일관성을 유지하고 ESLint는 코드 품질과 잠재적인 버그를 검사하는 데 사용됩니다.
 
 ```sh
 $ npm install --save-dev --save-exact prettier
 ```
 
-설정 파일을 추가하여 원하는 포맷팅 규칙을 정의할 수 있다.
+설정 파일을 추가하여 원하는 포맷팅 규칙을 정의할 수 있습니다.
 
 ```json
 // .prettierrc
@@ -282,7 +282,7 @@ $ npm install --save-dev --save-exact prettier
 }
 ```
 
-파일을 저장할 때 실시간으로 포맷팅을 하기 위해 Prettier 익스텐션을 설치한 다음 VS Code 설정 파일에 아래와 같이 Prettier를 기본 포맷터로 하고 저장할 때 마다 실행되도록 하는 설정을 추가한다.
+파일을 저장할 때 실시간으로 포맷팅을 하기 위해 Prettier 익스텐션을 설치한 다음 VS Code 설정 파일에 아래와 같이 Prettier를 기본 포맷터로 하고 저장할 때 마다 실행되도록 하는 설정을 추가합니다.
 
 ```json
 // .vscode/settings.json
@@ -292,29 +292,21 @@ $ npm install --save-dev --save-exact prettier
 }
 ```
 
-ESLint와 Prettier를 함께 사용할 때 일부 규칙이 충돌할 수 있으므로 **eslint-config-prettier** 라이브러리를 설치하여 이를 방지할 수 있다.
+ESLint와 Prettier를 함께 사용할 때 일부 규칙이 충돌할 수 있으므로 **eslint-config-prettier** 라이브러리를 설치하여 이를 방지할 수 있습니다.
 
 ```sh
 $ npm install --save-dev eslint-config-prettier
 ```
 
-```json
-// .eslintrc.js
-{
-  "extends": ["prettier"]
-  // eslint-config-*와 같은 형식을 갖는 패키지는 eslint-config 부분은 생략할 수 있다.
-}
-```
-
-이제 ESLint와 Prettier가 충돌 없이 함께 작동하도록 설정되었다.
+이제 ESLint와 Prettier가 충돌 없이 함께 작동하도록 설정되었습니다.
 
 ---
 
-## 🔹 Stylelint
+## Stylelint
 
-아래는 스타일 관련된 컨벤션이 없는 상황에서 styled-components를 사용해서 스타일을 적용한 코드이다.
+스타일 관련 컨벤션이 정의되지 않은 상황에서 styled-components를 사용하여 스타일을 적용한 예시를 살펴보겠습니다.
 
-Box라는 컴포넌트를 스타일링 할 때 누군가는 width를 먼저 작성할 수 있지만 또 사람은 height를 먼저 작성할 수 있다.
+Box라는 컴포넌트를 스타일링할 때, 개발자마다 CSS 속성의 작성 순서가 다를 수 있습니다. 예를 들어, 다음과 같이 width와 height의 순서가 다르게 작성될 수 있습니다.
 
 ```ts
 // styled-components
@@ -342,42 +334,44 @@ const Box = styled.div`
 `;
 ```
 
-이렇게 작성하는 방식이 다양하다면 코드의 양이 늘어날수록 가독성의 문제는 더욱 심각해질 것이다.
+이러한 작성 방식의 차이는 코드의 양이 증가할수록 가독성에 영향을 미칠 수 있습니다.
 
-스타일 코드의 수가 늘어나게 되면 개행을 사용해서 구분을 지을 수 있겠지만 개행을 하는 기준 또한 사람마다 달라 근본적인 해결책이 되지는 못한다.
+스타일 코드가 많아지면 개행을 사용하여 구분할 수 있으나, 개행 기준 역시 개발자마다 다르기 때문에 근본적인 해결책이 되지 않습니다.
 
-이 때 사용할 수 있는게 Stylelint로 **Stylelint**는 CSS, SCSS 및 CSS-in-JS 코드의 스타일 가이드 준수를 강제하는 도구이다.
+이러한 문제를 해결하기 위해 Stylelint를 사용할 수 있습니다. **Stylelint**는 CSS, SCSS 및 CSS-in-JS 코드의 스타일 가이드 준수를 강제하는 도구입니다.
 
-CSS 속성 순서, 중복된 스타일 제거, 미사용 코드 검출 등을 자동화할 수 있다.
+CSS 속성 순서 정렬, 중복된 스타일 제거, 미사용 코드 검출 등을 자동화할 수 있습니다.
 
 ### Stylelint 설정
 
-Stylelint를 설치하고 필요한 플러그인을 추가한다.
+Stylelint를 설치하고 필요한 플러그인을 추가하는 방법은 다음과 같습니다.
 
 ```sh
-$ npm install --save-dev  stylelint
-                          stylelint-config-standard
-                          stylelint-config-recess-order
-                          postcss-styled-syntax
+$ npm install --save-dev
+    stylelint
+    stylelint-config-standard
+    stylelint-order
+    stylelint-config-recess-order
+    postcss-styled-syntax
 ```
 
-- 기본적으로 설치해야 하는 stylelint와 stylelint-config-standard 이외의 나머지 패키지는 다음과 같은 역할을 한다
+기본적으로 설치해야 하는 stylelint와 stylelint-config-standard 이외의 패키지들의 역할은 다음과 같습니다:
 
 - stylelint-order
 
-  - CSS 속성의 순서와 관련된 lint 규칙을 모아놓은 플러그인으로 아래 stylelint-config-recess-order와 함께 사용한다.
+  - CSS 속성의 순서와 관련된 lint 규칙을 제공하는 플러그인으로, stylelint-config-recess-order와 함께 사용됩니다.
 
 - stylelint-config-recess-order
 
-  - Recess 방식대로 CSS 속성의 순서를 정렬할 수 있는 라이브러리
+  - Recess 방식에 따라 CSS 속성의 순서를 정렬하는 라이브러리입니다.
 
 - postcss-styled-syntax
 
   - CSS-in-JS에서 PostCSS 문법을 사용할 수 있는 라이브러리
 
-  - stylelint와 styled-components를 함께 사용할 때 cssSyntaxError가 발생하는 경우가 있는데 stylelint의 customSynstax 옵션에 추가해주면 이를 해결할 수 있다.
+  - stylelint와 styled-components를 함께 사용할 때 cssSyntaxError가 발생하는 경우가 있는데 stylelint의 customSyntax 옵션에 추가해주면 이를 해결할 수 있습니다.
 
-설정 파일을 추가하여 속성 정렬 및 스타일 규칙을 정의한다.
+설정 파일을 추가하여 속성 정렬 및 스타일 규칙을 정의합니다.
 
 ```js
 // .stylelintrc.js
@@ -398,9 +392,9 @@ module.exports = {
 };
 ```
 
-여기서 중요한 것은 `order/properties-order` 으로 해당 속성에 지정한 값을 통해 속성을 그룹별로 나눠서 정렬할 수 있다.
+여기서 중요한 것은 `order/properties-order` 으로 해당 속성에 지정한 값을 통해 속성을 그룹별로 나눠서 정렬할 수 있습니다.
 
-그리고 Stylelint 익스텐션을 설치한 다음 VS Code의 설정 파일에 아래와 같은 옵션을 추가해서 자동으로 규칙이 적용되도록 한다.
+그리고 Stylelint 익스텐션을 설치한 다음 VS Code의 설정 파일에 아래와 같은 옵션을 추가해서 자동으로 규칙이 적용되도록 합니다.
 
 ```json
 // .vscode/settings.json
@@ -415,9 +409,8 @@ module.exports = {
 }
 ```
 
-이제 Stylelint가 적용되어 **스타일 코드도 일관된 컨벤션을 유지할 수 있다.**
-
-이렇게 설정을 하고나면 위에서 작성한 코드와 동일한 코드를 작성하더라도 rule에서 설정한 규칙에 따라 순서대로 정렬되는 것 뿐 아니라 각각의 그룹 별로 나누어져 있는 것을 확인할 수 있다.
+이제 Stylelint가 적용되어 **스타일 코드도 일관된 컨벤션을 유지할 수 있습니다.**
+이렇게 설정을 하고나면 위에서 작성한 코드와 동일한 코드를 작성하더라도 rule에서 설정한 규칙에 따라 순서대로 정렬되는 것 뿐 아니라 각각의 그룹 별로 나누어져 있는 것을 확인할 수 있습니다.
 
 ```ts
 export const Box = styled.div`
@@ -436,8 +429,8 @@ export const Box = styled.div`
 
 ---
 
-## 🔹 마무리
+## 마무리
 
-ESLint, lint-staged, Prettier, Stylelint는 코드 스타일 유지 및 품질 향상을 위한 유용한 도구이다. 이러한 자동화된 도구를 활용하면 **코드 스타일을 강제하고, 개발자의 실수를 방지하며, 협업의 효율성을 높일 수 있다.**
+ESLint, lint-staged, Prettier, Stylelint는 코드 스타일 유지 및 품질 향상을 위한 유용한 도구입니다. 이러한 자동화된 도구를 활용하면 **코드 스타일을 강제하고, 개발자의 실수를 방지하며, 협업의 효율성을 높일 수 있습니다.**
 
-이를 도입하면 문서화에 의존하지 않고도 코드 컨벤션을 준수할 수 있으며, 팀 전체의 생산성을 높일 수 있다.
+이를 도입하면 문서화에 의존하지 않고도 코드 컨벤션을 준수할 수 있으며, 팀 전체의 생산성을 높일 수 있습니다.
