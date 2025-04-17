@@ -1,24 +1,24 @@
-import Meta from '@/components/Meta';
+import Meta from "@/components/Meta";
 
 export const metadata = {
-  title: 'Next.js로 블로그를 다시 만들게 된 이유와 느낀 점',
+  title: "Next.js로 블로그를 다시 만들게 된 이유와 느낀 점",
   description:
-    'Next.js로 블로그를 다시 만들게된 이유와 느낀점에 대해 설명하는 글입니다.',
-  date: '2024.10.18',
-  route: 'nextjs-blog',
+    "Next.js로 블로그를 다시 만들게된 이유와 느낀점에 대해 설명하는 글입니다.",
+  date: "2024.10.18",
+  route: "nextjs-blog",
 };
 
 <Meta metadata={metadata} />
 
 ## 들어가며
 
-처음에는 Jekyll, 그 다음에는 Gatsby로 블로그를 만들었는데 이번에는 **Next.js**로 기술 블로그를 다시 구축하게 되었다.
+처음에는 Jekyll, 그 다음에는 Gatsby로 블로그를 만들었는데 이번에는 **Next.js**로 기술 블로그를 다시 구축하게 되었습니다.
 
-블로그를 Next.js로 다시 만들기로 결심한 가장 큰 이유는 Next.js에서 나오는 새로운 기술들을 직접 사용해보고 싶었기 때문이다.
+블로그를 Next.js로 다시 만들기로 결심한 가장 큰 이유는 Next.js에서 나오는 새로운 기술들을 직접 사용해보고 싶었기 때문입니다.
 
-Next.js에서는 업데이트 될 때마다 새로운 기술이 등장하거나 이전과는 다른 큰 변화가 있다. Page 라우터에서 App 라우터로의 변경, 그리고 RSC, Server Action과 같은 새로운 기술들이 등장하지만 그때마다 이러한 기술들을 학습하더라도 실무에 바로 도입하는데는 어려움이 있다.
+Next.js에서는 업데이트 될 때마다 새로운 기술이 등장하거나 이전과는 다른 큰 변화가 있습니다. Page 라우터에서 App 라우터로의 변경, 그리고 RSC(React Server Components), Server Actions과 같은 새로운 기술들이 등장하지만 그때마다 이러한 기술들을 학습하더라도 실무에 바로 도입하는데는 어려움이 있습니다.
 
-그렇기 때문에 Next.js와 관련된 새로운 변경사항이 생길 때 마다 직접 만든 블로그를 통해 적용해보고 싶어서 Next.js으로 블로그를 다시 만들게 되었다.
+그렇기 때문에 Next.js와 관련된 새로운 변경사항이 생길 때 마다 직접 만든 블로그를 통해 적용해보고 싶어서 Next.js으로 블로그를 다시 만들게 되었습니다.
 
 ---
 
@@ -26,30 +26,30 @@ Next.js에서는 업데이트 될 때마다 새로운 기술이 등장하거나 
 
 ### 전체 글 데이터 관리
 
-블로그는 기본적으로 홈 화면에서는 전체 글 목록을 보여주고, 특정 글을 클릭하면 해당하는 페이지로 이동하게 된다.
+블로그는 기본적으로 홈 화면에서는 전체 글 목록을 보여주고, 특정 글을 클릭하면 해당하는 페이지로 이동하게 됩니다.
 
-그렇기 때문에 홈 화면에서 전체 글 목록을 보여주기 위한 데이터가 필요했고 아래처럼 배열 형식을 갖는 **JSON** 파일을 통해서 전체 글 목록을 관리할 수 있도록 했다.
+그렇기 때문에 홈 화면에서 전체 글 목록을 보여주기 위한 데이터가 필요했고 아래처럼 배열 형식을 갖는 **JSON** 파일을 통해서 전체 글 목록을 관리할 수 있도록 했습니다.
 
 ```jsx
 // data/posts.json
 
 [
   {
-    title: '자바스크립트 문법',
-    description: '자바스크립트 문법 정리',
-    date: '2022.05.18',
-    route: 'javascript-basic', // post의 url 경로 역할을 한다
+    title: "자바스크립트 문법",
+    description: "자바스크립트 문법 정리",
+    date: "2022.05.18",
+    route: "javascript-basic", // post의 url 경로 역할을 한다
   },
   {
-    title: '리액트 문법',
-    description: '리액트 문법 정리',
-    date: '2022.06.15',
-    route: 'react-basic',
+    title: "리액트 문법",
+    description: "리액트 문법 정리",
+    date: "2022.06.15",
+    route: "react-basic",
   },
 ];
 ```
 
-아래 함수를 통해서 JSON 파일을 읽고 날짜별로 정렬한 다음 최신 글을 보여주는 방식으로 처리해주었다.
+아래 함수를 통해서 JSON 파일을 읽고 날짜별로 정렬한 다음 최신 글을 보여주는 방식으로 처리해주었습니다.
 
 ```jsx
 // utils/index.ts
@@ -66,9 +66,9 @@ export const getPosts = async () => {
 
 ### 마크다운
 
-[공식문서](https://nextjs.org/docs/app/building-your-application/configuring/mdx#nextmdx)를 보니 마크다운을 구현하는 방법은 두가지가 있었다.
+[공식문서](https://nextjs.org/docs/app/building-your-application/configuring/mdx#nextmdx)를 보니 마크다운을 구현하는 방법은 두가지가 있었습니다.
 
-첫번째는 [@next/mdx](https://nextjs.org/docs/app/building-your-application/configuring/mdx#nextmdx) 를 사용하는 방식으로, 아래와 같이 app 폴더 내부에 route에 해당하는 폴더를 만들고 `page.mdx` 파일을 추가하면 해당 경로로 이동했을 때 해당하는 마크다운 파일을 보여주는 방식이다.
+첫번째는 [@next/mdx](https://nextjs.org/docs/app/building-your-application/configuring/mdx#nextmdx) 를 사용하는 방식으로, 아래와 같이 app 폴더 내부에 route에 해당하는 폴더를 만들고 `page.mdx` 파일을 추가하면 해당 경로로 이동했을 때 해당하는 마크다운 파일을 보여주는 방식입니다.
 
 ```bash
 your-project
@@ -77,14 +77,14 @@ your-project
         └── page.mdx # /my-mdx-page 경로에서 마크다운으로 작성한 글을 확인할 수 있다.
 ```
 
-두번째는 [Remote MDX](https://nextjs.org/docs/app/building-your-application/configuring/mdx#remote-mdx) 방식으로 외부 경로 또는 별도의 폴더 내부에 마크다운 파일을 관리하는 경우에 해당 경로를 전달하는 방식이다.
+두번째는 [Remote MDX](https://nextjs.org/docs/app/building-your-application/configuring/mdx#remote-mdx) 방식으로 외부 경로 또는 별도의 폴더 내부에 마크다운 파일을 관리하는 경우에 해당 경로를 전달하는 방식입니다.
 
 ```jsx
-import { MDXRemote } from 'next-mdx-remote/rsc';
+import { MDXRemote } from "next-mdx-remote/rsc";
 
 export default async function RemoteMdxPage() {
   // MDX text - can be from a local file, database, CMS, fetch, anywhere...
-  const res = await fetch('https://...');
+  const res = await fetch("https://...");
   const markdown = await res.text();
   return <MDXRemote source={markdown} />;
 }
@@ -92,71 +92,93 @@ export default async function RemoteMdxPage() {
 
 <br />
 
-두 방법 중에 첫번째 방법을 선택하게 되었다.
+두 방법 중에 첫번째 방법을 선택하게 되었습니다.
 
-이전에 `react-markdown` 라이브러리를 사용했을 때 remark, rehype 그리고 syntax highlighter와 같은 별도의 플러그인을 설치하고 이를 적용하는데 까다로운 부분이 있었는데 첫번째 방법을 사용하면 `next.config.mjs`의 설정파일에서 필요한 플러그인을 간단히 적용할 수 있었기 때문이다.
+이전에 `react-markdown` 라이브러리를 사용했을 때 remark, rehype 그리고 syntax highlighter와 같은 별도의 플러그인을 설치하고 이를 적용하는데 까다로운 부분이 있었는데 첫번째 방법을 사용하면 `next.config.mjs`의 설정파일에서 필요한 플러그인을 간단히 적용할 수 있었기 때문입니다.
 
-우선 아래와 같이 `mdx-components.tsx` 라는 파일을 만들어 준다. 이 때 주의할 점은 해당 파일의 경로는 코드의 최상단에 위치해야 한다는 것이다.
+우선 아래와 같이 `mdx-components.tsx` 라는 파일을 만들어 줍니다. 이 때 주의할 점은 해당 파일의 경로는 코드의 최상단에 위치해야 한다는 것입니다.
 
 ```tsx
 // .src/mdx-components.tsx
 
-import type { MDXComponents } from 'mdx/types';
+import type { MDXComponents } from "mdx/types";
 
 export function useMDXComponents(components: MDXComponents): MDXComponents {
   return {
     ...components,
+    // 여기에서 마크다운 요소들의 커스텀 스타일링이 가능합니다
+    h1: ({ children }) => (
+      <h1 className="text-3xl font-bold mb-4">{children}</h1>
+    ),
+    h2: ({ children }) => (
+      <h2 className="text-2xl font-semibold mb-3">{children}</h2>
+    ),
+    // 기타 요소들...
   };
 }
 ```
 
-그리고나서 필요한 플러그인을 `createMDX`의 option으로 전달만 해주면 된다.
+그리고나서 필요한 플러그인을 `createMDX`의 option으로 전달만 해주면 됩니다.
 
 ```js
 // next.config.mjs
 
-import createMDX from '@next/mdx';
-import remarkGfm from 'remark-gfm';
-import rehypePrettyCode from 'rehype-pretty-code';
+import createMDX from "@next/mdx";
+import remarkGfm from "remark-gfm";
+import rehypePrettyCode from "rehype-pretty-code";
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  pageExtensions: ['js', 'jsx', 'mdx', 'ts', 'tsx'],
+  pageExtensions: ["js", "jsx", "mdx", "ts", "tsx"],
 };
 
-// 필요한 플러그인을 추가해주면 된다.
+// 필요한 플러그인을 추가해주면 됩니다
 const withMDX = createMDX({
   options: {
     remarkPlugins: [remarkGfm],
-    rehypePlugins: [rehypePrettyCode],
+    rehypePlugins: [
+      [
+        rehypePrettyCode,
+        {
+          theme: "github-dark",
+          onVisitLine(node) {
+            // 줄 번호 추가
+            if (node.children.length === 0) {
+              node.children = [{ type: "text", value: " " }];
+            }
+          },
+          onVisitHighlightedLine(node) {
+            // 하이라이트된 줄 스타일링
+            node.properties.className.push("highlighted");
+          },
+        },
+      ],
+    ],
   },
 });
 
 export default withMDX(nextConfig);
 ```
 
-이렇게 설정을 하고나면 `page.mdx`가 위치한 폴더 경로로 이동했을 때 작성한 마크다운을 확인할 수 있다.
+이렇게 설정을 하고나면 `page.mdx`가 위치한 폴더 경로로 이동했을 때 작성한 마크다운을 확인할 수 있습니다.
 
-하지만 tailwind를 사용한다면 여기에 문제점이 있는 것을 확인할 수 있는데 바로 스타일이 적용되어 있지 않다는 것이다. 그 이유는 tailwind를 사용하게 되면 기본적으로 모든 html 요소의 스타일을 reset 하기
-때문이다.
+하지만 tailwind를 사용한다면 여기에 문제점이 있는 것을 확인할 수 있는데 바로 스타일이 적용되어 있지 않다는 것입니다. 그 이유는 tailwind를 사용하게 되면 기본적으로 모든 html 요소의 스타일을 reset 하기 때문입니다.
 
-즉, 클래스 이름으로 스타일을 적용해주지 않는 이상 아무런 스타일이 적용되어 있지 않기 때문에 `@tailwindcss/typograhy`를 사용해서 `prose`라는 속성을 class로 전달해주어야 한다.
+즉, 클래스 이름으로 스타일을 적용해주지 않는 이상 아무런 스타일이 적용되어 있지 않기 때문에 `@tailwindcss/typograhy`를 사용해서 `prose`라는 속성을 class로 전달해주어야 합니다.
 
-아래처럼 tailwind 설정 파일에 `@tailwindcss/typography`를 추가해준다.
+아래처럼 tailwind 설정 파일에 `@tailwindcss/typography`를 추가해줍니다.
 
 ```ts
 // `tailwind.config.ts`
 
 const config: Config = {
-
   ...
-
   plugins: [require('@tailwindcss/typography')],
 };
 export default config;
 ```
 
-그리고 나서 `.mdx` 파일이 있는 폴더와 동일한 위치에 `layout.tsx` 파일을 만들고 아래와 같이 `prose`를 class로 전달해주면 스타일이 정상적으로 적용된 것을 확인할 수 있다.
+그리고 나서 `.mdx` 파일이 있는 폴더와 동일한 위치에 `layout.tsx` 파일을 만들고 아래와 같이 `prose`를 class로 전달해주면 스타일이 정상적으로 적용된 것을 확인할 수 있습니다.
 
 ```tsx
 export default function Layout({
@@ -170,42 +192,37 @@ export default function Layout({
 
 <br />
 
-`page.mdx` 파일은 아래와 같은 형식을 갖도록 구현했다.
+`page.mdx` 파일은 아래와 같은 형식을 갖도록 구현했습니다.
 
 ```jsx
-import Meta from '@/components/Meta';
+import Meta from "@/components/Meta";
 
 export const metadata = {
-  title: '자바스크립트 문법',
-  description: '자바스크립트 문법에 대해 설명합니다.',
-  date: '2022.05.18',
-  route: 'javascript-basic',
+  title: "자바스크립트 문법",
+  description: "자바스크립트 문법에 대해 설명합니다.",
+  date: "2022.05.18",
+  route: "javascript-basic",
 };
 
-<Meta metadata={metadata} />
-
-### title
-
-post .....
-
+<Meta metadata={metadata} />;
 ```
 
-우선 정적으로 metadata를 관리하기 때문에 객체를 정의한 다음 export 해주었다.
+우선 정적으로 metadata를 관리하기 때문에 객체를 정의한 다음 export 해주었습니다.
 
-그리고 `Meta`라는 컴포넌트를 추가해주었는데, 이 컴포넌트는 글의 상세 페이지에서 제목과 작성 날짜를 보여주는 역할을 한다.
+그리고 `Meta`라는 컴포넌트를 추가해주었는데, 이 컴포넌트는 글의 상세 페이지에서 제목과 작성 날짜를 보여주는 역할을 합니다.
 
 ### 렌더링 방식
 
-블로그에 어떠한 기능을 추가하느냐에 따라 렌더링 방식도 달라질 수 있다. 예를들어 [Kent C.Dodds](https://kentcdodds.com/blog)의 블로그의 글을 보면 조회수 기능을 제공한다. 이 기능을 구현하기 위해서는 조회수를 저장하기 위한 데이터베이스가 필요하고, 글을 클릭할 때 마다 변경된 조회수를 동적으로 불러오기 위한 SSR, ISR과 같은 방식이 필요하다.
+블로그에 어떠한 기능을 추가하느냐에 따라 렌더링 방식도 달라질 수 있습니다. 예를들어 [Kent C.Dodds](https://kentcdodds.com/blog)의 블로그의 글을 보면 조회수 기능을 제공합니다. 이 기능을 구현하기 위해서는 조회수를 저장하기 위한 데이터베이스가 필요하고, 글을 클릭할 때 마다 변경된 조회수를 동적으로 불러오기 위한 SSR, ISR과 같은 방식이 필요합니다.
 
-하지만 블로그를 만드는 현재로서는 동적으로 페이지를 렌더링할 필요가 없었기 때문에 기본적인 SSG 렌더링 방식으로만 처리해주었다.
+하지만 블로그를 만드는 현재로서는 동적으로 페이지를 렌더링할 필요가 없었기 때문에 기본적인 SSG 렌더링 방식으로만 처리해주었습니다.
 
 ---
 
 ## 마치며
 
-블로그를 만들고나서 사용해보니 개선하고 싶은 점이 보이기 시작했다. 그 중 하나는 현재 새로운 글을 추가할 때 마다 `data/posts.json`과 `.mdx` 파일에서 동일한 metadata 객체를 반복해서 정의해주어야 한다는 번거로움이 있다.
+블로그를 만들고나서 사용해보니 개선하고 싶은 점이 보이기 시작했습니다. 그 중 하나는 현재 새로운 글을 추가할 때 마다 `data/posts.json`과 `.mdx` 파일에서 동일한 metadata 객체를 반복해서 정의해주어야 한다는 번거로움이 있습니다.
 
-이 뿐 아니라 애니메이션, 다크모드 그리고 각 마크다운에서 변환된 html 요소들에 대한 스타일 변경 등 앞으로 추가되거나 개선되어야 할 점들이 아직 있다.
+이 뿐 아니라 애니메이션, 다크모드 그리고 각 마크다운에서 변환된 html 요소들에 대한 스타일 변경 등 앞으로 추가되거나 개선되어야 할 점들이 아직 있습니다.
 
-하지만 블로그를 만드는 과정에서 Next.js의 최신 공식문서를 읽으며 새롭게 알게된 것들이 있었고 이전에 학습했지만 사용하지 않아 기억 속에만 있었던 지식들을 다시 끄집어 낼 수 있었기에 Next.js로 블로그를 다시 만드는데 있어 소기의 목적은 소기의 목적은 달성할 수 있었다고 생각한다.
+하지만 블로그를 만드는 과정에서 Next.js의 최신 공식문서를 읽으며 새롭게 알게된 것들이 있었고 이전에 학습했지만 사용하지 않아 기억 속에만 있었던 지식들을 다시 끄집어 낼 수 있었기에 Next.js로 블로그를 다시 만드는데 있어 소기의 목적은 달성할 수 있었다고 생각합니다.
