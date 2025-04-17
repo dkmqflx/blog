@@ -12,38 +12,89 @@ export const metadata = {
 
 ## nuqs란?
 
-[nuqs](https://nuqs.47ng.com/)는 React 애플리케이션에서 URL 쿼리 파라미터를 타입 안전하게 관리할 수 있는 상태 관리 라이브러리이다.
-기본적으로 `useState`처럼 동작하지만, 상태를 URL의 쿼리 문자열에 저장해서 페이지를 새로고침하거나 공유해도 유지할 수 있도록 해준다.
-따라서 필터, 검색, 정렬, 페이지네이션 같은 기능을 구현할 때 더 직관적이고 확장성 있게 코드를 작성할 수 있다.
+[nuqs](https://nuqs.47ng.com/)는 React 애플리케이션에서 URL 쿼리 파라미터를 타입 안전하게 관리할 수 있는 상태 관리 라이브러리입니다.
+
+기본적으로 `useState`처럼 동작하지만, 상태를 URL의 쿼리 문자열에 저장해서 페이지를 새로고침하거나 공유해도 유지할 수 있도록 해줍니다.
+
+따라서 필터, 검색, 정렬, 페이지네이션 같은 기능을 구현할 때 더 직관적이고 확장성 있게 코드를 작성할 수 있습니다.
 
 ---
 
 ## nuqs가 필요한 이유
 
-React에서 URL 쿼리 파라미터를 검색어나 필터링, 페이지네이션 등의 기능에 사용한다. 이를 위해서는 아래와 같은 기능이 구현되어야 한다.
+React에서 URL 쿼리 파라미터를 검색어나 필터링, 페이지네이션 등의 기능에 사용합니다. 이를 위해서는 아래와 같은 기능이 구현되어야 합니다.
 
 1. 새로고침해도 상태 유지
 2. 뒤로 가기 / 앞으로 가기 가능
 3. 현재 상태를 URL로 공유 가능
 
-하지만 `useState`나 `useSearchParams`을 사용하면 다음과 같은 한계가 있다.
+하지만 `useState`나 `useSearchParams`을 사용하면 다음과 같은 한계가 있습니다.
 
 ### useState로 상태 관리하기
 
-`useState`를 사용하여 상태를 관리하게 되면 다음과 같은 단점이 있다.
+`useState`를 사용하여 상태를 관리하게 되면 다음과 같은 단점이 있습니다.
 
 1. 새로고침 시 상태가 사라짐
 2. 뒤로 가기/앞으로 가기 기능이 동작하지 않음
 3. 현재 상태를 공유할 수 없음 (URL을 통해 상태 공유 불가)
 
+아래는 `useState`를 사용한 검색 기능의 예시입니다:
+
 ```tsx
-const [search, setSearch] = useState("");
+"use client";
+
+import { useState } from "react";
+
+export function SearchBar() {
+  const [search, setSearch] = useState("");
+  const [category, setCategory] = useState("all");
+
+  // 페이지를 새로고침하면 검색어와 카테고리가 초기화됩니다
+  // URL에 상태가 반영되지 않아 현재 검색 결과를 공유할 수 없습니다
+
+  return (
+    <div className="flex gap-4">
+      <input
+        type="text"
+        value={search}
+        onChange={(e) => setSearch(e.target.value)}
+        placeholder="검색어를 입력하세요..."
+        className="border p-2 rounded"
+      />
+
+      <select
+        value={category}
+        onChange={(e) => setCategory(e.target.value)}
+        className="border p-2 rounded"
+      >
+        <option value="all">전체</option>
+        <option value="electronics">전자기기</option>
+        <option value="clothing">의류</option>
+        <option value="books">도서</option>
+      </select>
+
+      <div className="mt-4">
+        검색어: {search || "없음"} / 카테고리: {category}
+      </div>
+    </div>
+  );
+}
 ```
+
+이 코드의 주요 문제점들은 다음과 같습니다:
+
+1. **상태 초기화**: 페이지를 새로고침하면 검색어와 카테고리가 초기값으로 돌아갑니다.
+
+2. **URL 공유 불가능**: 특정 검색 조건을 다른 사용자와 공유하고 싶을 때, URL만으로는 불가능합니다.
+
+3. **브라우저 네비게이션 문제**: 사용자가 브라우저의 뒤로 가기를 눌렀을 때, 이전 검색 상태로 돌아가지 않습니다.
+
+<br />
 
 ### useSearchParams로 상태 관리하기
 
-`useSearchParams`로 상태를 관리하게 되면 `useState`를 사용했을 때의 단점을 해결할 수 있지만 다음과 같은 불편함이 여전히 존재한다.
-그리고 `useSearchParams hook`은 client component에서만 사용할 수 있다.
+`useSearchParams`로 상태를 관리하게 되면 `useState`를 사용했을 때의 단점을 해결할 수 있지만 다음과 같은 불편함이 여전히 존재합니다.
+그리고 `useSearchParams hook`은 client component에서만 사용할 수 있습니다.
 
 1. 타입 안전성이 부족함 (searchParams.get("q")는 string | null 반환)
 2. 직렬화/파싱이 필요함 (숫자, 배열, 객체 등을 관리하기 어려움)
@@ -86,7 +137,7 @@ export function SearchComponent() {
 
 ## nuqs 사용하기
 
-nuqs는 다음과 같은 기능을 제공해서 기존의 상태 관리 방식의 문제점을 해결한다
+nuqs는 다음과 같은 기능을 제공해서 기존의 상태 관리 방식의 문제점을 해결합니다.
 
 1. `useQueryState hook`를 사용하여 string, number, boolean, object 등 다양한 타입을 안전하게 관리 가능
 2. 페이지 새로고침 후에도 상태 유지
@@ -94,8 +145,8 @@ nuqs는 다음과 같은 기능을 제공해서 기존의 상태 관리 방식�
 
 ### useQueryState
 
-아래는 nuqs의 `useQueryState`를 사용한 예제이다. 사용자가 입력하면 hello 값이 `setHello()`를 통해 URL에 반영된다 `(?hello=value)`.
-페이지 새로고침 후에도 hello 값이 유지되고, URL을 복사해서 공유하면 같은 상태가 유지 된다.
+아래는 nuqs의 `useQueryState`를 사용한 예제입니다. 사용자가 입력하면 hello 값이 `setHello()`를 통해 URL에 반영됩니다 `(?hello=value)`.
+페이지 새로고침 후에도 hello 값이 유지되고, URL을 복사해서 공유하면 같은 상태가 유지됩니다.
 
 ```tsx
 "use client";
@@ -118,7 +169,7 @@ export function Demo() {
 }
 ```
 
-아래는 parser를 통해서 query state를 관리하는 예제이다. count 값이 parseAsInteger를 사용해 숫자로 변환되므로, 문자열이 아닌 정수로 관리할 수 있다
+아래는 parser를 통해서 query state를 관리하는 예제입니다. count 값이 parseAsInteger를 사용해 숫자로 변환되므로, 문자열이 아닌 정수로 관리할 수 있습니다.
 
 ```tsx
 import { parseAsInteger, useQueryState } from "nuqs";
@@ -141,8 +192,8 @@ export function Counter() {
 
 ### useQueryStates
 
-useQueryStates를 사용하면 여러 개의 상태를 한 번에 관리할 수 있다. 아래 코드는 q, page, sort 쿼리 상태를 관리하는 예제이다.
-setQuery hook을 톨해서 쿼리를 업데이트 할 수 있고, 사용자가 뒤로가기를 누르면 이전 상태로 복원된다.
+useQueryStates를 사용하면 여러 개의 상태를 한 번에 관리할 수 있습니다. 아래 코드는 q, page, sort 쿼리 상태를 관리하는 예제입니다.
+setQuery hook을 통해서 쿼리를 업데이트 할 수 있고, 사용자가 뒤로가기를 누르면 이전 상태로 복원됩니다.
 
 ```tsx
 import { parseAsInteger, useQueryStates } from "nuqs";
@@ -181,7 +232,7 @@ export function MultiFilter() {
 
 ### 서버 컴포넌트에서 nuqs 사용하기
 
-nuqs는 서버 컴포넌트에서도 사용할 수 있다. 아래 코드와 같이 searchParams props를 통해 q 값을 가져와서 API 요청을 보내고 결과를 렌더링할 수 있다.
+nuqs는 서버 컴포넌트에서도 사용할 수 있습니다. 아래 코드와 같이 searchParams props를 통해 q 값을 가져와서 API 요청을 보내고 결과를 렌더링할 수 있습니다.
 
 ```tsx
 import { parseAsString } from "nuqs";
@@ -217,6 +268,8 @@ export async function SearchResults({
 
 ## 결론
 
-nuqs는 기존 useState나 useSearchParams의 단점을 보완하여 타입 안전하고 직관적인 방식으로 URL 상태를 관리할 수 있는 강력한 도구이다.
-nuqs에서 제공하는 hook을 통해 검색, 필터링, 페이지네이션과 같은 기능들을 더 수월하게 구현할 수 있다.
-그리고 Next.js의 클라이언트 컴포넌트와 서버 컴포넌트 모두에서 활용할 수 있다는 장점도 있다.
+nuqs는 기존 useState나 useSearchParams의 단점을 보완하여 타입 안전하고 직관적인 방식으로 URL 상태를 관리할 수 있는 강력한 도구입니다.
+
+nuqs에서 제공하는 hook을 통해 검색, 필터링, 페이지네이션과 같은 기능들을 더 수월하게 구현할 수 있습니다.
+
+그리고 Next.js의 클라이언트 컴포넌트와 서버 컴포넌트 모두에서 활용할 수 있다는 장점도 있습니다.
