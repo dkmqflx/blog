@@ -3,26 +3,26 @@ import Meta from "@/components/Meta";
 export const metadata = {
   title: "Next.js 13에서 Jest와 React Testing Library로 테스트 환경 설정하기",
   description:
-    "Next.js 13에서는 테스트 환경을 설정할 때 다양한 방법을 제공하지만, Jest와 React Testing Library를 활용한 설정이 가장 일반적이다. Next.js 공식 문서에서도 여러 테스트 라이브러리에 대한 가이드를 제공하고 있지만, 여기서는 Jest와 React Testing Library를 기반으로 테스트 환경을 구성하는 방법을 정리한다.",
+    "Next.js 13에서 Jest와 React Testing Library를 기반으로 테스트 환경을 구성하는 방법을 정리해보았습니다.",
   date: "2023.12.23",
   route: "next13-testing",
 };
 
 <Meta metadata={metadata} />
 
-## 개요
+## 들어가며
 
-Next.js 13에서는 테스트 환경을 설정할 때 다양한 방법을 제공하지만, **Jest**와 **React Testing Library**를 활용한 설정이 가장 일반적이다.
+Next.js 13에서는 테스트 환경을 설정할 때 다양한 방법을 제공합니다.
 
-Next.js 공식 문서에서도 여러 테스트 라이브러리에 대한 가이드를 제공하고 있지만, 여기서는 **Jest와 React Testing Library를 기반으로 테스트 환경을 구성하는 방법**을 정리한다.
+Next.js 공식 문서에서도 여러 테스트 라이브러리에 대한 가이드를 제공하고 있지만, 여기서는 **Jest와 React Testing Library를 기반으로 테스트 환경을 구성하는 방법**을 정리해보았습니다.
 
-> **참고:** Next.js 13에서는 SWC를 기본 컴파일러로 사용하기 때문에 Babel 기반의 이전 버전과 다르게 초기 설정이 필요할 수 있다. Babel을 사용하는 경우라면 [공식 문서의 Babel 설정](https://nextjs.org/docs/pages/building-your-application/testing/jest) 항목을 참고하면 된다.
+> **참고:** Next.js 13에서는 SWC를 기본 컴파일러로 사용하기 때문에 Babel 기반의 이전 버전과 다르게 초기 설정이 필요할 수 있습니다. Babel을 사용하는 경우라면 [공식 문서의 Babel 설정](https://nextjs.org/docs/pages/building-your-application/testing/jest) 항목을 참고하시면 됩니다.
 
 ---
 
-## 🔹 필수 라이브러리 설치
+## 라이브러리 설치
 
-테스트 환경을 구축하려면 다음과 같은 라이브러리를 설치해야 한다.
+테스트 환경을 구축하려면 다음과 같은 라이브러리를 설치해야 합니다.
 
 ```bash
 npm install -D  jest
@@ -36,57 +36,65 @@ npm install -D  jest
 
 ### 라이브러리 설명
 
-- **jest**: 테스트 러너로, 테스트 코드를 실행하는 역할을 한다.
-- **jest-environment-jsdom**: 브라우저 환경을 시뮬레이션할 수 있는 JSDOM을 제공한다.
-- **@testing-library/react**: React 컴포넌트 테스트에 필요한 기능을 제공한다.
-- **@testing-library/jest-dom**: DOM 관련 Matcher(`toBeInTheDocument` 등)를 추가한다.
-- **@testing-library/user-event**: 사용자의 이벤트(클릭, 입력 등)를 시뮬레이션할 수 있도록 도와준다.
-- **@types/jest**: TypeScript 환경에서 Jest를 사용할 수 있도록 타입을 제공한다.
-- **react-test-renderer**: React 컴포넌트의 **스냅샷 테스트**를 지원한다.
+- **jest**: 테스트 러너로, 테스트 코드를 실행하는 역할을 합니다.
+- **jest-environment-jsdom**: 브라우저 환경을 시뮬레이션할 수 있는 JSDOM을 제공합니다.
+- **@testing-library/react**: React 컴포넌트 테스트에 필요한 기능을 제공합니다.
+- **@testing-library/jest-dom**: DOM 관련 Matcher(`toBeInTheDocument` 등)를 추가합니다.
+- **@testing-library/user-event**: 사용자의 이벤트(클릭, 입력 등)를 시뮬레이션할 수 있도록 도와줍니다.
+- **@types/jest**: TypeScript 환경에서 Jest를 사용할 수 있도록 타입을 제공합니다.
+- **react-test-renderer**: React 컴포넌트의 **스냅샷 테스트**를 지원합니다.
 
 ---
 
-## 🔹 Jest 설정 파일 구성
+## Jest 설정 파일 구성
 
-Jest를 Next.js와 함께 사용하려면 `jest.config.js` 파일을 생성하고 다음과 같이 설정하면 된다.
+Jest를 Next.js와 함께 사용하려면 `jest.config.js` 파일을 생성하고 다음과 같이 설정합니다.
 
 ```javascript
+// next/jest를 사용하여 Next.js 프로젝트에 맞는 Jest 설정을 생성합니다
 const nextJest = require("next/jest");
 
+// Next.js 앱의 경로를 지정하여 설정을 생성합니다
 const createJestConfig = nextJest({
-  dir: "./",
+  dir: "./", // Next.js 앱의 루트 디렉토리
 });
 
 const customJestConfig = {
+  // Jest가 테스트를 실행하기 전에 실행할 설정 파일
   setupFilesAfterEnv: ["<rootDir>/jest.setup.js"],
+
+  // jsdom 환경을 사용하여 브라우저와 유사한 환경에서 테스트
   testEnvironment: "jest-environment-jsdom",
+
+  // 절대 경로 별칭 설정 (예: @/components -> src/components)
   moduleNameMapper: {
     "^@/(.*)$": "<rootDir>/src/$1",
   },
 };
 
+// createJestConfig를 내보내 Next.js와 Jest를 함께 사용합니다
 module.exports = createJestConfig(customJestConfig);
 ```
 
-이 설정을 통해 Next.js의 설정을 Jest에 맞게 최적화할 수 있다.
+이 설정을 통해 Next.js의 설정을 Jest에 맞게 최적화할 수 있습니다.
 
 ---
 
-## 🔹 Jest 환경 설정 파일 작성
+## Jest 환경 설정 파일 작성
 
-Jest 환경을 설정하려면 `jest.setup.js` 파일을 생성하고 다음과 같이 작성하면 된다.
+Jest 환경을 설정하려면 `jest.setup.js` 파일을 생성하고 다음과 같이 작성합니다.
 
 ```javascript
 import "@testing-library/jest-dom";
 ```
 
-이렇게 하면 **`@testing-library/jest-dom`의 확장된 Matcher를 사용할 수 있게 되어, 테스트 코드가 더 직관적으로 작성된다.**
+이렇게 하면 **`@testing-library/jest-dom`의 확장된 Matcher를 사용할 수 있게 되어, 테스트 코드를 더 직관적으로 작성할 수 있습니다.**
 
 ---
 
-## 🔹 TypeScript 설정 업데이트
+## TypeScript 설정 업데이트
 
-TypeScript 환경에서 Jest를 원활하게 사용하려면 `tsconfig.json` 파일에 다음 설정을 추가해야 한다.
+TypeScript 환경에서 Jest를 원활하게 사용하려면 `tsconfig.json` 파일에 다음 설정을 추가해야 합니다.
 
 ```json
 {
@@ -100,13 +108,13 @@ TypeScript 환경에서 Jest를 원활하게 사용하려면 `tsconfig.json` 파
 }
 ```
 
-이 설정을 추가하면 Jest와 관련된 타입을 인식할 수 있으며, **절대 경로(`@/components/...`)를 사용한 import도 가능해진다.**
+이 설정을 추가하면 Jest와 관련된 타입을 인식할 수 있으며, **절대 경로(`@/components/...`)를 사용한 import도 가능해집니다.**
 
 ---
 
-## 🔹 테스트 실행 스크립트 추가
+## 테스트 실행 스크립트 추가
 
-테스트를 실행하기 위해 `package.json`에 스크립트를 추가한다.
+테스트를 실행하기 위해 `package.json`에 스크립트를 추가합니다.
 
 ```json
 "scripts": {
@@ -115,43 +123,43 @@ TypeScript 환경에서 Jest를 원활하게 사용하려면 `tsconfig.json` 파
 }
 ```
 
-이제 `npm run test`를 실행하면 테스트가 자동으로 감지되고 실행된다.
+이제 `npm run test`를 실행하면 테스트가 자동으로 감지되고 실행됩니다.
 
-이 때 기존에 사용하던 환경변수를 테스팅 환경에서도 사용하기 위해서는 .env.test 라는 이름의 env 파일을 추가해주어야 한다.
+기존에 사용하던 환경변수를 테스팅 환경에서도 사용하기 위해서는 .env.test 라는 이름의 env 파일을 추가해주셔야 합니다.
 
 ---
 
-## 🔹 next-router-mock 사용하기 (라우터 모킹)
+## next-router-mock 사용하기 (라우터 모킹)
 
-테스트 하는 컴포넌트가 useRouter를 사용하는 경우에 nextrouter was not mounted 라는 에러 메세지가 나타난다
+테스트 하는 컴포넌트가 useRouter를 사용하는 경우에 `nextrouter was not mounted` 라는 에러 메세지가 나타납니다.
 
-이러한 에러를 해결하기 위해서는 router 관련된 부분을 mocking 해주어야 한다.
+이러한 에러를 해결하기 위해서는 router 관련된 부분을 mocking 해주어야 합니다.
 
-공식문서의 **[NextRouter was not mounted](https://nextjs.org/docs/messages/next-router-not-mounted)** 항목을 보면 [next-router-mock](https://www.npmjs.com/package/next-router-mock)를 Useful Links로 걸어놓았기 때문에 해당 라이브러리를 설치해서 mocking 해주었다.
+공식문서의 **[NextRouter was not mounted](https://nextjs.org/docs/messages/next-router-not-mounted)** 항목을 보면 [next-router-mock](https://www.npmjs.com/package/next-router-mock)를 Useful Links로 걸어놓았기 때문에 해당 라이브러리를 설치해서 mocking 해주었습니다.
 
 ```bash
 npm install -D next-router-mock
 ```
 
-그런 다음, `jest.setup.js`에 아래 내용을 추가한다.
+그런 다음, `jest.setup.js`에 아래 내용을 추가합니다.
 
 ```javascript
 jest.mock("next/router", () => require("next-router-mock"));
 ```
 
-이제 `useRouter()` 훅을 사용하는 컴포넌트도 에러 없이 테스트할 수 있다.
+이제 `useRouter()` 훅을 사용하는 컴포넌트도 에러 없이 테스트할 수 있습니다.
 
 ---
 
-## 🔹 Jest Styled Components와 스냅샷 테스트 적용
+## Jest Styled Components와 스냅샷 테스트 적용
 
-Styled Components를 사용하고 있다면, [Jest Styled Components](https://github.com/styled-components/jest-styled-components#jest-styled-components)를 설치하여 **스냅샷 테스트에서 스타일을 포함하여 비교할 수 있도록 설정**할 수 있다.
+Styled Components를 사용하고 있다면, [Jest Styled Components](https://github.com/styled-components/jest-styled-components#jest-styled-components)를 설치하여 **스냅샷 테스트에서 스타일을 포함하여 비교할 수 있도록 설정**할 수 있습니다.
 
 ```bash
 npm install -D jest-styled-components
 ```
 
-라이브러리 설치 후 각각의 테스트가 실행되기 전에 configuration이 적용되도록 `setupFilesAfterEnv`에 추가한다.
+라이브러리 설치 후 각각의 테스트가 실행되기 전에 configuration이 적용되도록 `setupFilesAfterEnv`에 추가합니다.
 
 ```js
 // jest.config.js
@@ -161,15 +169,15 @@ setupFilesAfterEnv: ['<rootDir>/jest.setup.ts', 'jest-styled-components'],
 
 ---
 
-## 🔹 Provider 설정하기 (React Query, Theme Provider)
+## Provider 설정하기 (React Query, Theme Provider)
 
-테스트 코드에서 공통적으로 사용해야 하는 **Provider**가 있다면, 이를 미리 정의해 두면 편리하다.
+테스트 코드에서 공통적으로 사용해야 하는 **Provider**가 있다면, 이를 미리 정의해 두면 편리합니다.
 
-대표적으로 스타일링을 위한 styled component의 Theme Provider, 그리고 서버 상태를 관리하는데 사용하는 React Query의 QueryClientProvider가 있다
+대표적으로 스타일링을 위한 styled component의 Theme Provider, 그리고 서버 상태를 관리하는데 사용하는 React Query의 QueryClientProvider가 있습니다.
 
-테스트 코드에 스타일 또는 비동기 처리를 위한 코드가 있다면 위의 Provider로 감싸주어야 한다.
+테스트 코드에 스타일 또는 비동기 처리를 위한 코드가 있다면 위의 Provider로 감싸주어야 합니다.
 
-이 때 반복되는 코드 작성을 줄이고 필요한 테스트에서 쉽게 가져다 사용할 수 있도록 Provider를 미리 정의한다.
+이 때 반복되는 코드 작성을 줄이고 필요한 테스트에서 쉽게 가져다 사용할 수 있도록 Provider를 미리 정의해둡니다.
 
 ### **Theme Provider 적용**
 
@@ -196,9 +204,9 @@ export const TestQueryClientProvider = ({ children }) => (
 );
 ```
 
-아래 코드는 위에서 정의한 Theme Provider를 적용해서 테스트 코드를 작성한 예시다.
+아래 코드는 위에서 정의한 Theme Provider를 적용해서 테스트 코드를 작성한 예시입니다.
 
-```ts
+```tsx
 import { render } from "@testing-library/react";
 import { TestThemeProvider } from "@common/__test__/providers";
 import Add from "./index";
@@ -216,14 +224,21 @@ describe("List", () => {
 });
 ```
 
-이렇게 설정하면, **테스트 코드에서 공통적으로 필요한 Provider를 매번 선언할 필요 없이 간편하게 적용할 수 있다.**
+이렇게 설정하면, **테스트 코드에서 공통적으로 필요한 Provider를 매번 선언할 필요 없이 간편하게 적용할 수 있습니다.**
 
 ---
 
 ## 마치며
 
-Jest와 React Testing Library를 활용하여 Next.js 13에서 **효율적인 테스트 환경을 구축하는 방법**을 정리해 보았다.
+지금까지 Next.js 13에서 Jest와 React Testing Library를 활용한 테스트 환경 구성 방법을 살펴보았습니다. 정리하면 다음과 같습니다:
 
-테스트 환경을 구성하는 과정이 쉽지만은 않지만, **한 번 설정해 두면 이후 개발 생산성이 크게 향상된다.**
+1. **기본 설정**
 
-테스트 환경을 미리 설정해 두면 **실제 배포 전에 버그를 사전에 감지할 수 있어 더 안정적인 서비스를 제공할 수 있다.**
+   - Jest와 Testing Library 관련 라이브러리 설치
+   - Jest 설정 파일 구성
+   - TypeScript 지원을 위한 설정
+
+2. **추가 기능**
+   - next-router-mock을 통한 라우터 테스트 지원
+   - Styled Components 스냅샷 테스트 설정
+   - Provider 설정을 통한 테스트 환경 개선
