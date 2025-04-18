@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
 import Header from "@/components/Header";
+import { Analytics } from "@vercel/analytics/react";
 
 export const metadata: Metadata = {
   title: "dkmqflx's blog",
@@ -23,6 +24,7 @@ export default function RootLayout({
       <body className="max-w-screen-md mx-auto p-4">
         <Header />
         <main>{children}</main>
+        <Analytics />
       </body>
     </html>
   );
