@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+# Sitemap: https://dkmqflx.vercel.app/sitemap.xml 
