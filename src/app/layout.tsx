@@ -13,6 +13,9 @@ export const metadata: Metadata = {
   alternates: {
     canonical: "https://dkmqflx.vercel.app",
   },
+  verification: {
+    google: "qF8zAN-ZwYVAEdL8eD1m1DdkZ9OIAUdcoyjA_gcd3MU",
+  },
 };
 
 const inter = Inter({ subsets: ["latin"] });
