@@ -10,6 +10,9 @@ export const metadata: Metadata = {
   icons: {
     icon: "/favicon.ico",
   },
+  alternates: {
+    canonical: "https://dkmqflx.vercel.app",
+  },
 };
 
 const inter = Inter({ subsets: ["latin"] });
